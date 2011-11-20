@@ -1,19 +1,18 @@
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class Elevator {
 
-   // TODO need to add a function that allows the manager to add goals for the
-   // elevator
-
    private int floor; // The current floor of the elevator
    private int startingFloor; // The floor the elevator starts on
-   private final int maxCap;
+   private final int maxCap; //Maximum Capacity of the elevator
+   private final int maxFloor; //The maximum Floor the elevator can reach
    private int distanceTrav;
    private int curCap; // Current Capacity of the elevator
    private int state; // -1 going down, 0 not moving, 1 going up
    private PriorityQueue<Integer> goals; // The goals for the elevator
-   private HashMap<Integer, Person> contains; // The people the elevator
+   private HashMap<Integer, LinkedList<Person>> contains; // The people the elevator
                                               // contains
    private FloorComparatorDown down = new FloorComparatorDown();
    private FloorComparatorUp up = new FloorComparatorUp();
@@ -22,18 +21,21 @@ public class Elevator {
    public static final int STATIC = 0;
    public static final int UP = 1;
 
-   public Elevator(int maxCap, int start) {
-      // TODO need to keep in mind a maximum floor an elevator can reach
+   //TODO Update the elevator software so that it automatically switches states if it hits maxFloor
+   
+   public Elevator(int maxCap, int start, int upperElevatorRange) {
       /***
        * The constructor for an elevator, with an initial starting floor and
        * maximum capacity
        */
       this.maxCap = maxCap;
+      this.maxFloor = upperElevatorRange;
       this.distanceTrav = 0;
       this.startingFloor = start;
+      this.floor = this.startingFloor;
       this.state = STATIC; // The elevator hasn't moved yet
       goals = new PriorityQueue<Integer>();
-      contains = new HashMap<Integer, Person>(maxCap);
+      contains = new HashMap<Integer, LinkedList<Person>>(maxCap);
    }
 
    public int getCurCap() {
@@ -120,42 +122,50 @@ public class Elevator {
          return false;
       }
       int floorWanted = p.getDestinationFloor();
-      if (checkValid(floorWanted))
+      if (checkValid(floorWanted)) {
          goals.add(floorWanted);
-      contains.put(floorWanted, p);
+      }
+      LinkedList<Person> group = contains.get(floorWanted);
+      if (group != null) {
+         //group exists so we add the person to the existing group
+         group.add(p);
+      } else {
+         // group doesnt exist so we create a group and add its first person
+         LinkedList<Person> newGroup = new LinkedList<Person>();
+         newGroup.add(p);
+         contains.put(floorWanted, newGroup);
+      }
       curCap++;
       return true;
    }
 
-   private Person[] personLeaves(int check) {
-      Person p = contains.get(check);
-      Person[] peopleLeaving = null;
-      if (p != null) {
-         peopleLeaving = new Person[curCap];
-         // TODO Remove multiple people
+   private void checkRange () {
+      /***
+       * Updates the elevator's state 
+       * should the elevator reach the max floor
+       */
+      if (floor == maxFloor) {
+         assert !goals.isEmpty(); //If the goals are not empty this is a bug
+         setState (state * -1);
       }
-      return peopleLeaving;
    }
-
-   public Person[] update() {
+   
+   public LinkedList<Person> update() {
       /***
        * Moves the elevator forward one unit of time Returns either a person or
-       * null
+       * null, should null be returned it means that no person left, but people might be entering.
        */
       if (!goals.isEmpty()) {
          floor += state;
          distanceTrav += state;
-         System.out.println("Person gets off!");
+         checkRange ();
          int localGoal = goals.peek();
          // We have found a goal set
          if (localGoal == floor) {
             int key = goals.remove();
-            Person[] peopleLeaving = personLeaves (key);
-            if (peopleLeaving != null) {
-               return peopleLeaving; 
-            }
-         }
-         return null;
+            LinkedList<Person> peopleLeaving = contains.get(localGoal);
+            return peopleLeaving;
+         }    
       }
       state = STATIC; // we have nothing to do
       return null;
