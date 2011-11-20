@@ -122,9 +122,10 @@ public class Elevator {
          return false;
       }
       int floorWanted = p.getDestinationFloor();
-      if (checkValid(floorWanted)) {
-         goals.add(floorWanted);
+      if (!checkValid(floorWanted)) {
+         return false;
       }
+      goals.add(floorWanted);
       LinkedList<Person> group = contains.get(floorWanted);
       if (group != null) {
          //group exists so we add the person to the existing group
