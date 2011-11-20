@@ -2,9 +2,10 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 
 public class Elevator {
-   
-//TODO need to add a function that allows the manager to add goals for the elevator
-   
+
+   // TODO need to add a function that allows the manager to add goals for the
+   // elevator
+
    private int floor; // The current floor of the elevator
    private int startingFloor; // The floor the elevator starts on
    private final int maxCap;
@@ -69,6 +70,13 @@ public class Elevator {
       }
    }
 
+   public void setGoal(int toDo) {
+      /***
+       * Sets a goal for which the floor the elevator stops on
+       */
+      goals.add(toDo);
+   }
+
    public int getDistance() {
       /*** Returns the total distance the elevator has traveled */
       return distanceTrav;
@@ -89,9 +97,9 @@ public class Elevator {
 
    private boolean checkValid(int f) {
       /***
-       * Takes the input f (floor) and check if its a valid floor.
-       * Example: if f is somewhere below the current floor of 
-       * the elevator but the elevator is going up it will be rejected
+       * Takes the input f (floor) and check if its a valid floor. Example: if f
+       * is somewhere below the current floor of the elevator but the elevator
+       * is going up it will be rejected
        */
 
       if (f < floor && state == UP) {
@@ -119,14 +127,35 @@ public class Elevator {
       return true;
    }
 
-   public Person update() {
-      /*** moves the elevator forward one unit of time */
+   private Person[] personLeaves(int check) {
+      Person p = contains.get(check);
+      Person[] peopleLeaving = null;
+      if (p != null) {
+         peopleLeaving = new Person[curCap];
+         // TODO Remove multiple people
+      }
+      return peopleLeaving;
+   }
+
+   public Person[] update() {
+      /***
+       * Moves the elevator forward one unit of time Returns either a person or
+       * null
+       */
       if (!goals.isEmpty()) {
          floor += state;
          distanceTrav += state;
          System.out.println("Person gets off!");
-         int key = goals.remove();
-         return contains.get(key);
+         int localGoal = goals.peek();
+         // We have found a goal set
+         if (localGoal == floor) {
+            int key = goals.remove();
+            Person[] peopleLeaving = personLeaves (key);
+            if (peopleLeaving != null) {
+               return peopleLeaving; 
+            }
+         }
+         return null;
       }
       state = STATIC; // we have nothing to do
       return null;
