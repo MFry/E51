@@ -16,6 +16,8 @@ public class Building {
         // 0 is arraylist of people going up
         // 1 is arralist of people going up
     }
+    //TODO add a method with this signature: public int getPeople (int floor, int state)
+    // returns the number of people wishing to go up or down
     
     public void insert(Person some){
         if(some.getDirection() == 1){
