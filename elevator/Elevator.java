@@ -66,9 +66,9 @@ public class Elevator {
        * that it priorities based on the state
        */
       if (newState > 0) {
-         goals = new PriorityQueue<Integer>(2 * maxCap, up);
-      } else {
          goals = new PriorityQueue<Integer>(2 * maxCap, down);
+      } else {
+         goals = new PriorityQueue<Integer>(2 * maxCap, up);
       }
    }
 
@@ -156,6 +156,8 @@ public class Elevator {
        * Moves the elevator forward one unit of time Returns either a person or
        * null, should null be returned it means that no person left, but people might be entering.
        */
+       
+       // TODO Fix bug on removing more than one element in goals
       if (!goals.isEmpty()) {
          floor += state;
          distanceTrav += state;
@@ -163,7 +165,8 @@ public class Elevator {
          int localGoal = goals.peek();
          // We have found a goal set
          if (localGoal == floor) {
-            int key = goals.remove();
+            //int key = goals.remove();
+            goals.remove ();
             LinkedList<Person> peopleLeaving = contains.get(localGoal);
             return peopleLeaving;
          }    
