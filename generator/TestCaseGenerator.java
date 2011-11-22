@@ -3,17 +3,20 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class TestCaseGenerator {
 
+    private static final int NIGHT_SHIFT_END = 500;
+    private static final int NIGHT_SHIFT_BEGIN = 2300;
     /**
      * Program that generates several test cases for the elevator algorithm
      * 
      * @author Joseph Del Prete
      */
 
-    static int buildingFloors = 50;
+    static int buildingFloors = 5;
     int workers;
     static int maxCapacity;
     static int openingTime = 900; // 9:00 am
@@ -48,11 +51,13 @@ public class TestCaseGenerator {
         return workers;
     }
 
+    @SuppressWarnings("unchecked")
     public static void main (String[] args) {
         // do not necessarily need main
         // serves mainly as a caller for other methods
         initBuilding();
         ArrayList<JPerson> testPeople = generateNormalPeople ();
+        Collections.sort(testPeople);
         try {
             writeOutput (testPeople, "output.txt");
         } catch (IOException e) {
@@ -73,7 +78,6 @@ public class TestCaseGenerator {
         // 60% of max capacity enters in morning
         int amountOfWorkers = (int) ( maxCapacity * 0.6);
         // people can never exceed max capacity
-        
         openingTime = 900;
         
         // generate workers for the morning, they enter at 9:00am
@@ -156,6 +160,82 @@ public class TestCaseGenerator {
                 }
             }
         }
+        
+        // random access until next day at 8:00am, which is 0800
+        // generate traffic during operating hours
+        currentTime = closingTime;
+        while (currentTime < 2400) { // midnight
+            for (int i = 0; i < 60; i++)
+            {
+                int currentFloor = chooseCurrentFloor();
+                int destinationFloor = chooseRandomFloor(currentFloor);
+                int direction = 0;
+                if (destinationFloor < currentFloor)
+                {
+                    direction = -1;
+                } else if (destinationFloor > currentFloor)
+                {
+                    direction = 1;
+                } else {
+                    // shouldn't happen
+                    direction = 0;
+                }
+                JPerson person = new JPerson(currentTime + i, direction, currentFloor, destinationFloor);
+                building.get(person.getDestFloor ()).add (person);
+                personList.add (person);
+            }
+            currentTime += 100; // go to the next hour
+        }
+        
+        currentTime = 0000;
+        while (currentTime < 800) { // 800 am
+            for (int i = 0; i < 60; i++)
+            {
+                int currentFloor = chooseCurrentFloor();
+                int destinationFloor = chooseRandomFloor(currentFloor);
+                int direction = 0;
+                if (destinationFloor < currentFloor)
+                {
+                    direction = -1;
+                } else if (destinationFloor > currentFloor)
+                {
+                    direction = 1;
+                } else {
+                    // shouldn't happen
+                    direction = 0;
+                }
+                JPerson person = new JPerson(currentTime + i, direction, currentFloor, destinationFloor);
+                building.get(person.getDestFloor ()).add (person);
+                personList.add (person);
+            }
+            currentTime += 100; // go to the next hour
+        }
+        
+        // generate custodians for late night shift
+        // custodians come in at 11:00pm for night shift
+        int amountOfCustodians = (int)(maxCapacity * 0.10);
+        count = 0;
+        for (; count < amountOfCustodians; count++)
+        {
+            JPerson person = new JPerson (
+                    NIGHT_SHIFT_BEGIN + randInt.nextInt () % 10, // time
+                    1, // direction
+                    0,
+                    workerBeginDayChooseFloor () // destination floor
+            );
+            building.get(person.getDestFloor()).add(person);
+            personList.add (person);
+        }
+        
+        // custodians then leave at 5:00pm
+        int currentPosition = personList.size() - amountOfCustodians -1;
+        count = 0;
+        for (; count < amountOfCustodians; count++) {
+            JPerson temp = personList.get (currentPosition + count);
+            JPerson person = new JPerson(NIGHT_SHIFT_END + randInt.nextInt () % 10, -1, temp.getDestFloor (), 0);
+            building.get(person.getDestFloor ()).add (person);
+            personList.add (person);
+        } // personList grows by += amountOfCustodians
         
         return personList;
     }

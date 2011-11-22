@@ -1,4 +1,6 @@
-public class JPerson {
+import java.util.Comparator;
+
+public class JPerson implements Comparator, Comparable {
     int time; // 0000 to 2400
     int direction; // 1 for up, 0 for down
     int initialFloor; // 0 is ground floor
@@ -48,5 +50,34 @@ public class JPerson {
         String s = "";
         s += "Time: " + this.time + " Direction: " + this.direction + " InitFloor: " + this.initialFloor + " DestFloor: " + this.destinationFloor; 
         return s;
+    }
+
+    @Override
+    public int compare (Object arg0, Object arg1) {
+        JPerson person1 = (JPerson) arg0;
+        JPerson person2 = (JPerson) arg1;
+        if (person1.time > person2.time)
+        {
+            return 1;
+        } else if (person1.time < person2.time)
+        {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public int compareTo (Object o) {
+        JPerson person2 = (JPerson) o;
+        if (this.time > person2.time)
+        {
+            return 1;
+        } else if (this.time < person2.time)
+        {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 }
