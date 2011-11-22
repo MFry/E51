@@ -13,17 +13,25 @@ public class Building {
     public Building(int numFloors) {
         numbFloors = numFloors;
         floors = (ArrayList<Person>[][]) new ArrayList[numFloors][2];
-        // 0 is arraylist of people going up
+        // 0 is arraylist of people going down
         // 1 is arralist of people going up
     }
-    //TODO add a method with this signature: public int getPeople (int floor, int state)
-    // returns the number of people wishing to go up or down
+
+    
+    public int getPeople(int floor, int state){
+        /**
+         * Returns the number of people in a floor wishing to go either up or down
+         */
+        return floors[floor][state].size ();
+    }
     
     public void insert(Person some){
-        if(some.getDirection() == 1){
+        // Inserts the person on the specific floor and queue of either going up
+        // or down
+        if(some.getDirection() == 1){ // Going up
             floors[some.getDestinationFloor()][0].add (some);
         }
-        else if (some.getDirection() == -1){
+        else if (some.getDirection() == -1){ // Going down
             floors[some.getDestinationFloor()][1].add(some);
         }
     }
