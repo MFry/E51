@@ -16,6 +16,12 @@ public class Building {
     public Building(int numFloors) {
         numbFloors = numFloors;
         floors = (ArrayList<Person>[][]) new ArrayList[numFloors][3];
+        for (int i = 0; i < floors.length; i++){
+            floors[i][0] = new ArrayList<Person>();
+            floors[i][1] = new ArrayList<Person>();
+            floors[i][2] = new ArrayList<Person>();
+        }
+
         // 0 is array list of people going down
         // 1 is array list of people going up
         // 2 is array list of people staying in the floor
