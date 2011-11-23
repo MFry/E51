@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-public class Elevator {
+public class Elevator implements Comparable<Elevator>{
 
    private int floor; // The current floor of the elevator
    private int startingFloor; // The floor the elevator starts on
@@ -13,7 +13,8 @@ public class Elevator {
    private int state; // -1 going down, 0 not moving, 1 going up
    private PriorityQueue<Integer> goals; // The goals for the elevator
    private HashMap<Integer, LinkedList<Person>> contains; // The people the
-                                                          // elevator
+   /*STATE*/                                              // elevator
+   private boolean dumbMode;
    // contains
    private FloorComparatorDown down = new FloorComparatorDown();
    private FloorComparatorUp up = new FloorComparatorUp();
@@ -21,11 +22,12 @@ public class Elevator {
    public static final int DOWN = -1;
    public static final int STATIC = 0;
    public static final int UP = 1;
-
+   
+   private static final char dMode = 'd';
    // TODO Update the elevator software so that it automatically switches states
    // if it hits maxFloor
 
-   public Elevator(int maxCap, int start, int upperElevatorRange) {
+   public Elevator(int maxCap, int start, int upperElevatorRange, String mode) {
       /***
        * The constructor for an elevator, with an initial starting floor and
        * maximum capacity
@@ -38,8 +40,22 @@ public class Elevator {
       this.state = STATIC; // The elevator hasn't moved yet
       goals = new PriorityQueue<Integer>();
       contains = new HashMap<Integer, LinkedList<Person>>(maxCap);
+      extractMode (mode);
    }
 
+   private void extractMode (String mode) {
+      /***
+       * Sets the appropriate modes
+       * d - for dumbMode
+       */
+      //currently only one state
+      for (int i = 0; i < mode.length(); ++i) {
+         if (mode.charAt(i) == dMode) {
+            dumbMode = true;
+         }
+      }
+   }
+   
    public int getCurCap() {
       /*** returns the current capacity of the elevator */
       return curCap;
@@ -166,6 +182,7 @@ public class Elevator {
    }
 
    public LinkedList<Person> update() {
+      //TODO Check what floors the elevator can move to
       /***
        * Moves the elevator forward one unit of time. The elevator moves up or
        * down a floor depending on its state and if it has a goal. Returns
@@ -190,7 +207,23 @@ public class Elevator {
                                   // this floor
          }
       }
-      state = STATIC; // we have nothing to do
+      if (!dumbMode) {
+         state = STATIC; // we have nothing to do
+      }
       return null;
+   }
+
+   @Override
+   public int compareTo(Elevator o) {
+      /***
+       * Allows elevators to be comparable by priority (which is the current floor they are on)
+       */
+      //TODO Test this function
+      if (this.floor > o.floor ) {
+         return 1;
+      } else if (this.floor < o.floor ) {
+         return -1;
+      }
+      return 0;
    }
 }
