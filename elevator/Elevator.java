@@ -156,7 +156,7 @@ public class Elevator {
       /***
        * Moves the elevator forward one unit of time. The elevator moves up or
        * down a floor depending on its state and if it has a goal. Returns
-       * either a person or null, should null be returned it means that no
+       * either a group of people or null, should null be returned it means that no
        * person left that floor, but people might be entering.
        */
 
