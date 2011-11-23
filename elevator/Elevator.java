@@ -91,6 +91,17 @@ public class Elevator {
       return state;
    }
 
+   public boolean isFull () {
+      return maxCap == curCap;
+   }
+   
+   public int getCurrentFloor () {
+      /***
+       * Returns the floor the elevator is currently on
+       */
+      return this.floor;
+   }
+   
    public boolean isActive() {
       /*** returns whether the elevator has moved in the last unit time */
       if (state != 0) {
@@ -113,7 +124,9 @@ public class Elevator {
       }
       return true;
    }
-
+   
+   //TODO Write a more specific method for enter thats takes in a certain person
+   
    public boolean enter(Person p) {
       /***
        * Adds a person when appropriate inside the elevator keeping track of
@@ -133,7 +146,7 @@ public class Elevator {
          // group exists so we add the person to the existing group
          group.add(p);
       } else {
-         // group doesnt exist so we create a group and add its first person
+         // group doesn't exist so we create a group and add its first person
          LinkedList<Person> newGroup = new LinkedList<Person>();
          newGroup.add(p);
          contains.put(floorWanted, newGroup);
