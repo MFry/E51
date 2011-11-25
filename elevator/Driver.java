@@ -17,7 +17,12 @@ public class Driver {
     public static int idGenerator = 1;
 
     public static void main (String[] args) {
-        Building building = new Building (10, 2);
+        Building building = new Building (10, 1);
+        Elevator[] elevators = new Elevator[1];
+        for(int i = 0; i < elevators.length; i++){
+            elevators[i] = new Elevator(10, 0, 10, "d");
+        }
+        ElevatorManager manager = new ElevatorManager(elevators, building, "d");
         /**
          * TODO For every time unit the manager should do something
          * Check according to the state, if person has to be created or moved.
@@ -25,31 +30,41 @@ public class Driver {
         try {
             // Open the file that is the first
             // command line parameter
-            FileInputStream fstream = new FileInputStream ("textfile.txt");
+            FileInputStream fstream = new FileInputStream ("test.txt");
             // Get the object of DataInputStream
             DataInputStream in = new DataInputStream (fstream);
             BufferedReader br = new BufferedReader (new InputStreamReader (in));
             String strLine;
             Scanner scan;
             String movement;
-            int time;
+            int time=0;
+            int currentTime = 0;
             int destFloor;
             int direction;
             // Read File Line By Line
             while ( ( strLine = br.readLine ()) != null) {
                 // Manage for every single time
                 scan = new Scanner(strLine);
-                time = scan.nextInt ();
                 movement = scan.next ();
-                destFloor = scan.nextInt ();
+                time = scan.nextInt ();
                 direction = scan.nextInt ();
-                
-                if (movement.equals ("create")){
-                    building.enterBuilding (new Person(idGenerator++, time, destFloor, direction));
+                destFloor = scan.nextInt ();
+                if((time != currentTime)){ // check this line for bugs
+                    // Do the movements since there is a change on management
+                    manager.manage ();
+                } else {
+                    if (movement.equals ("create")){
+                        building.enterBuilding (new Person(idGenerator++, time, destFloor, direction));
+                    }
+                    else if (movement.equals("move")) {
+                        /**
+                         * TODO How do I see what floor I am currently in if the buildings does not allow me to do that?
+                         */
+                        System.out.println("move");
+                    }
                 }
-                else {
-                    // do movements within floors throughout the elevator manager
-                }
+
+                currentTime = time;
             }
             // Close the input stream
             in.close ();

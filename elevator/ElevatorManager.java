@@ -29,6 +29,8 @@ public class ElevatorManager {
       curFloorsUp = new PriorityQueue<Integer>(elevators.length, down);
       upRequestsServed = new boolean[b.floors.length];
       downRequestsServed = new boolean[b.floors.length];
+      upElevators = new PriorityQueue<Elevator> (); // Roger added this
+      
    }
 
    private void setMode(String mode) {
@@ -54,6 +56,8 @@ public class ElevatorManager {
 
    private void generateUpQueue() {
       //TODO Write documentation
+       // By Roger: don't forget to check if the elevators are empty
+       // because this adds a empty elevator to the queue
       for (int i = 0; i < elevators.length; ++i) {
          if (elevators[i].getState() == Elevator.UP
                || elevators[i].getState() == Elevator.STATIC) {
