@@ -5,6 +5,9 @@ public class Person {
     private int waitingTime;
     private int destinationFloor;
     private int direction;
+    public static int UP = 1;
+    public static int STATIC = 0;
+    public static int DOWN = -1;
     
     public Person(int id, int waitTime, Integer destFl, Integer direct){
         setID (id);

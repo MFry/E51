@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Building {
    // LinkedList<Person>[] floors;
@@ -49,10 +50,31 @@ public class Building {
       }
    }
 
-   // Not sure
+   // Seems like not useful.
    public void insertInFloor(int floor, Person some) {
       // remove first
-      floors[floor][STATIC].add(some);
+       int direction = some.getDirection ();
+       if ( direction == -1){
+           direction = DOWN;
+       } else if (direction == 1){
+           direction = UP;
+       } else {
+           direction = STATIC;
+       }
+      floors[floor][direction].add(some);
+   }
+   
+   /**
+    * 
+    * @param floor
+    * @param people
+    * This method insert a group of people into the given floor
+    */
+   public void insertInFloor(int floor, LinkedList<Person> people){
+       for (int i = 0; i < people.size ();i++){
+           people.get(i).setDirection (Person.STATIC);
+          floors[floor][STATIC].add(people.get (i));
+       }
    }
 
    // int currentFloor, int state, Integer destination
@@ -79,6 +101,13 @@ public class Building {
    // Removes the first person on the queue according to its direction
    public Person remove(int floor, int direction) {
       Person test;
+      if ( direction == -1){
+          direction = DOWN;
+      } else if (direction == 1){
+          direction = UP;
+      } else {
+          direction = STATIC;
+      }
       test = floors[floor][direction].remove(0);
       return test;
    }
