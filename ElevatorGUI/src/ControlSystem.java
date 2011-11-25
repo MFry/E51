@@ -15,7 +15,7 @@ public class ControlSystem implements ControlSystemInterface {
    public Elevator[] step () {
       // Get the state of each individual elevator and then update
       for (int j = 0; j < numElevators; j++) {
-         positions[j] = positions[j]++;
+         
       }
       return positions;
    }

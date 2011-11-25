@@ -1,5 +1,6 @@
 import java.awt.Dimension;
 
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -13,14 +14,19 @@ import javax.swing.JSlider;
 public class ElevatorSlider extends JPanel {
    /** Number of floors after which the sliders need to be resized */
    private static final int FLOOR_LIMIT = 60;
+
    /** Spacing for the minor ticks on the sliders */
    private static final int MINOR_TICK_SPACING = 1;
+
    /** Spacing for the major ticks on the sliders */
    private static final int MAJOR_TICK_SPACING = 10;
+
    /** Height of the slider for each floor */
    private static final int HEIGHT_PER_FLOOR = 10;
+
    /** Width that each slider takes up */
-   private static final int SLIDER_WIDTH = 90;
+   private static final int SLIDER_WIDTH = 100;
+
    /** Slider to represent the elevator's position */
    JSlider slider;
    /** String that contains the info about the elevator */
@@ -29,6 +35,11 @@ public class ElevatorSlider extends JPanel {
    JLabel label = new JLabel (labelStr);
    /** Elevator that this object describes */
    Elevator elevator;
+   int currFloor;
+   int maxCap;
+   int numFloors;
+   int currCap;
+   int state;
 
    /**
     * Creates a new elevator slider with info
@@ -40,15 +51,17 @@ public class ElevatorSlider extends JPanel {
       int height = HEIGHT_PER_FLOOR * numFloors;
       int heightResize = 1 + (numFloors / FLOOR_LIMIT);
       height /= heightResize;
+      // Create the slider and adjust its properties
       slider = new JSlider (JSlider.VERTICAL, 0, 100, 0);
       slider.setMajorTickSpacing (MAJOR_TICK_SPACING);
       slider.setMinorTickSpacing (MINOR_TICK_SPACING);
       slider.setPaintTicks (true);
       slider.setPaintLabels (true);
       slider.setPreferredSize (new Dimension (width, height));
-      this.add (slider);
-      this.add (label);
+      // Set the layout
+      this.setLayout (new BoxLayout (this, BoxLayout.Y_AXIS));
       elevator = e;
+      update ();
    }
 
    /**
@@ -57,10 +70,28 @@ public class ElevatorSlider extends JPanel {
     * @param floor Floor it is now on
     * @param c Current carrying capacity
     */
-   public void update (int floor) {
-      slider.setValue (floor);
-      buildString ("Bob", elevator.getCurCap (), 100, floor,
-      elevator.getState ());
+   public void update () {
+      // Remove all elements
+      this.removeAll ();
+      // Update the numerical information
+      getInfo ();
+      // Add the slider
+      this.add (slider);
+      // Create a label for its current condition
+      buildString ("BOB", currCap, maxCap, currFloor, state);
+      // Add the label to the panel
+      this.add (label);
+      slider.setValue (currFloor);
+   }
+
+   public void getInfo () {
+      // Get the numerical information from the elevator
+      int[] info = elevator.getInfo ();
+      currFloor = info[0];
+      maxCap = info[2];
+      numFloors = info[3];
+      currCap = info[5];
+      state = info[6];
    }
 
    /**
@@ -87,5 +118,6 @@ public class ElevatorSlider extends JPanel {
       labelStr += state + "\n";
       labelStr += "" + currCap + "/" + maxCap + "\n";
       labelStr += "Floor " + currFloor + "\n";
+      label = new JLabel (labelStr);
    }
 }
