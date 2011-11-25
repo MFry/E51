@@ -1,3 +1,4 @@
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class ElevatorManager {
@@ -72,7 +73,17 @@ public class ElevatorManager {
    }
 
    private void generateDownQueue() {
-
+      for (int i = 0; i < elevators.length; ++i) {
+         if (elevators[i].getState() == Elevator.DOWN
+               || elevators[i].getState() == Elevator.STATIC) { // TODO THIS
+                                                                // BEHAVIOUR
+                                                                // NEEDS TO BE
+                                                                // NOTED
+            if (!elevators[i].isFull()) { // Ignores full elevators
+               downElevators.add(elevators[i]);
+            }
+         }
+      }
    }
 
    private Elevator getElevator(int elevatorFloor, int state) {
@@ -87,6 +98,15 @@ public class ElevatorManager {
       return null;
    }
 
+   private void runAllElevators () {
+      for (int i = 0; i < elevators.length; ++i) {
+         LinkedList<Person> people = elevators[i].update();
+         if (people != null) {
+            building.insertInFloor(elevators[i].getCurrentFloor(), person);
+         }
+      }
+   }
+   
    private void dumbManage() {
       /***
        * The dumb elevator follows a very strict and poorly optimized: 1. The
@@ -157,7 +177,9 @@ public class ElevatorManager {
             }
          }
       }
+      runAllElevators ();
    }
+  
    // It will need to poll the building to see which floor has the most people
 
 }
