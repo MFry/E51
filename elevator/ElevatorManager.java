@@ -8,7 +8,6 @@ public class ElevatorManager {
    private boolean[] downRequestsServed;
    PriorityQueue<Elevator> upElevators;
    PriorityQueue<Elevator> downElevators; // TODO Implement this
-   PriorityQueue<Integer> curFloorsUp;
    /*
     * Mode available: d - Dumb mode (An elevator cannot switch states until it
     * hits the top floor
@@ -17,7 +16,7 @@ public class ElevatorManager {
 
    // TODO: Be able to output the proper statistics
 
-   public ElevatorManager(Elevator[] e, Building b, String mode) {
+   public ElevatorManager (Elevator[] e, Building b, String mode) {
       /***
        * Given the elevator and building the elevator will manage the elevators
        * in constraint to the modes set
@@ -25,13 +24,15 @@ public class ElevatorManager {
       setMode(mode);
       this.elevators = e;
       this.building = b;
-      FloorComparatorDown down = new FloorComparatorDown();
-      curFloorsUp = new PriorityQueue<Integer>(elevators.length, down);
+      ElevatorComparatorAscending up = new ElevatorComparatorAscending();
+      ElevatorComparatorDescending down = new ElevatorComparatorDescending();
+      upElevators = new PriorityQueue<Elevator>(e.length, up);
+      downElevators = new PriorityQueue<Elevator>(e.length, down);
       upRequestsServed = new boolean[b.floors.length];
       downRequestsServed = new boolean[b.floors.length];
    }
 
-   private void setMode(String mode) {
+   private void setMode (String mode) {
       /***
        * Extracts the string for valid modes
        */
@@ -43,7 +44,7 @@ public class ElevatorManager {
       }
    }
 
-   public void manage() {
+   public void manage () {
 
       // this should not happen
       assert elevators == null;
@@ -55,7 +56,7 @@ public class ElevatorManager {
 
    }
 
-   private void generateUpQueue() {
+   private void generateUpQueue () {
       // TODO Write documentation
       for (int i = 0; i < elevators.length; ++i) {
          if (elevators[i].getState() == Elevator.UP
@@ -68,6 +69,10 @@ public class ElevatorManager {
             }
          }
       }
+   }
+   
+   private void generateDownQueue () {
+      
    }
 
    private Elevator getElevator(int elevatorFloor, int state) {
@@ -100,6 +105,7 @@ public class ElevatorManager {
          if (curElevator.getCurrentFloor() <= i) {
             int people = building.getPeople(i, Elevator.UP);
             if (people > 0) {
+               //We only do work for floors that have people on them
                if (curElevator.getCurrentFloor() == i) {
                   // Take as many people from this floor
                   // as the elevator allows

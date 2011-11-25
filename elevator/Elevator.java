@@ -16,8 +16,8 @@ public class Elevator implements Comparable<Elevator>{
    /*STATE*/                                              // elevator
    private boolean dumbMode;
    // contains
-   private FloorComparatorDown down = new FloorComparatorDown();
-   private FloorComparatorUp up = new FloorComparatorUp();
+   private FloorComparatorAscending up = new FloorComparatorAscending();
+   private FloorComparatorDescending down = new FloorComparatorDescending();
    /* Variables to be used by the manager as well as the elevator */
    public static final int DOWN = -1;
    public static final int STATIC = 0;
@@ -84,9 +84,9 @@ public class Elevator implements Comparable<Elevator>{
        * that it priorities based on the state
        */
       if (newState > 0) {
-         goals = new PriorityQueue<Integer>(2 * maxCap, down);
-      } else {
          goals = new PriorityQueue<Integer>(2 * maxCap, up);
+      } else {
+         goals = new PriorityQueue<Integer>(2 * maxCap, down);
       }
    }
 
