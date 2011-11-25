@@ -16,8 +16,8 @@ public class Elevator implements Comparable<Elevator>{
    /*STATE*/                                              // elevator
    private boolean dumbMode;
    // contains
-   private FloorComparatorDown down = new FloorComparatorDown();
-   private FloorComparatorUp up = new FloorComparatorUp();
+   private FloorComparatorDescending down = new FloorComparatorDescending();
+   private FloorComparatorAscending up = new FloorComparatorAscending();
    /* Variables to be used by the manager as well as the elevator */
    public static final int DOWN = -1;
    public static final int STATIC = 0;

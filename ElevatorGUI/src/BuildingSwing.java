@@ -14,16 +14,7 @@ import javax.swing.JSlider;
  *
  */
 public class BuildingSwing {
-   /** Number of floors after which the sliders need to be resized */
-   private static final int FLOOR_LIMIT = 60;
-   /** Spacing for the minor ticks on the sliders */
-   private static final int MINOR_TICK_SPACING = 1;
-   /** Spacing for the major ticks on the sliders */
-   private static final int MAJOR_TICK_SPACING = 10;
-   /** Height of the slider for each floor */
-   private static final int HEIGHT_PER_FLOOR = 10;
-   /** Width that each slider takes up */
-   private static final int SLIDER_WIDTH = 90;
+
    /** Floors in the building */
    int numFloors;
    /** Elevators in the building */
@@ -60,11 +51,7 @@ public class BuildingSwing {
       frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
       System.out.println ("Setting frame size");
       frame.setSize (500, 500);
-      // Calculate the dimensions for the sliders
-      int width = SLIDER_WIDTH;
-      int height = HEIGHT_PER_FLOOR * numFloors;
-      int heightResize = 1 + (numFloors / FLOOR_LIMIT);
-      height /= heightResize;
+      
       // Generate the elevators
       for (int i = 0; i < numElevators; i++) {
          JSlider slider = new JSlider (JSlider.VERTICAL, 0, numFloors, 0);
@@ -76,15 +63,15 @@ public class BuildingSwing {
          sliders[i] = slider;
          elevator[i] = new JPanel ();
          elevator[i].add (slider);
-         elevator[i].setLayout (new BoxLayout(elevator[i], BoxLayout.Y_AXIS));
+         elevator[i].setLayout (new BoxLayout (elevator[i], BoxLayout.Y_AXIS));
          elevator[i].add (new JLabel ("" + sliders[i].getValue ()));
-         
+
          frame.add (elevator[i]);
-         
+
       }
       frame.setLayout (new FlowLayout ());
       frame.setVisible (true);
-      frame.setBackground (Color.WHITE);
+      frame.setBackground (Color.white);
       frame.pack ();
    }
 
