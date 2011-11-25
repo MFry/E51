@@ -31,8 +31,19 @@ public class ElevatorManager {
       downElevators = new PriorityQueue<Elevator>(e.length, down);
       upRequestsServed = new boolean[b.floors.length];
       downRequestsServed = new boolean[b.floors.length];
+      init();
    }
 
+   private void init () {
+      //TODO Documentation
+      //Sets all elevators on the bottom floor to an up state
+      for (int i = 0; i < elevators.length; ++i) {
+         if (elevators[i].getCurrentFloor() == 0) {
+            elevators[i].changeState(Elevator.UP);
+         }
+      }
+   }
+   
    private void setMode(String mode) {
       /***
        * Extracts the string for valid modes
