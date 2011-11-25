@@ -73,22 +73,18 @@ public class BuildingSwing {
     */
    public void update (int rate) throws InterruptedException {
       // Get the state of each individual elevator and then update
-      for (int j = 0; j < elevators; j++) {
-         sliders[j].setValue ((int) (Math.random () * floors));
-      }
+      ControlSystem system = new ControlSystem (elevators, floors);
       while (true){
-         for (int j = 0; j < elevators; j++) {
-            sliders[j].setValue (sliders[j].getValue () - 1);
-            if (sliders[j].getValue () == 0 || sliders[j].getValue () == floors) {
-               sliders[j].setValue ((int) (Math.random () * floors));
-            }
+         int[] values = system.step ();
+         for (int i = 0; i < elevators; i++) {
+            sliders[i].setValue (values[i]);
          }
          Thread.sleep (rate);
       }
    }
 
    public static void main (String[] args) throws InterruptedException {
-      BuildingSwing building = new BuildingSwing (25, 20);
+      BuildingSwing building = new BuildingSwing (100, 20);
       building.init ();
       building.update (100);
    }
