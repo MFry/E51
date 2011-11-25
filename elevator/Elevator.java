@@ -111,6 +111,10 @@ public class Elevator implements Comparable<Elevator>{
       return maxCap == curCap;
    }
    
+   public void setCurrentFloor(int floor){
+       this.floor = floor;
+   }
+   
    public int getCurrentFloor () {
       /***
        * Returns the floor the elevator is currently on
@@ -192,17 +196,21 @@ public class Elevator implements Comparable<Elevator>{
 
       if (!goals.isEmpty()) {
          floor += state;
-         distanceTrav += state;
+         distanceTrav += 1;
          checkRange();
+         int destination = goals.peek ();
          int localGoal = goals.peek();
          // We have found a goal set
          if (localGoal == floor) {
             // int key = goals.remove(); //Good idea by Roger
             while (localGoal == floor) {
                goals.remove();
-               localGoal = goals.remove();
+               localGoal = goals.peek();
             }
-            LinkedList<Person> peopleLeaving = contains.get(localGoal);
+            LinkedList<Person> peopleLeaving = contains.get(destination); //TODO change name of destination to idk
+            if(peopleLeaving!=null){
+                this.curCap -= peopleLeaving.size ();
+            }
             return peopleLeaving; // Returns the group of people departing on
                                   // this floor
          }
