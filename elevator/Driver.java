@@ -25,15 +25,15 @@ public class Driver {
          * building, or get the person ready in the queue towards its direction.
          * Manager will start moving when there is a change in time.
          */
-        Building building = new Building (10, 1);
-        Elevator[] elevators = new Elevator[1];
+        Building building = new Building (10, 3);
+        Elevator[] elevators = new Elevator[building.getNumElevators ()];
         for (int i = 0; i < elevators.length; i++) {
             elevators[i] = new Elevator (10, 0, 10, "d");
         }
         ElevatorManager manager = new ElevatorManager (elevators, building, "d");
         // Read file line by line
         try {
-            FileInputStream fstream = new FileInputStream ("test.txt");
+            FileInputStream fstream = new FileInputStream ("rawOutput.txt");
             DataInputStream in = new DataInputStream (fstream);
             BufferedReader br = new BufferedReader (new InputStreamReader (in));
             String strLine;
@@ -44,6 +44,7 @@ public class Driver {
             int initialFloor;
             int destFloor;
             int direction;
+            int currentLine = 0;
             while ( ( strLine = br.readLine ()) != null) {
                 // Manage for every single time
                 scan = new Scanner (strLine);
@@ -53,14 +54,18 @@ public class Driver {
                 initialFloor = scan.nextInt ();
                 destFloor = scan.nextInt ();
                 Person current;
-                if ( ( time != currentTime)) { // check this line for bugs
+                if ( ( time != currentTime) && currentLine!=0) { // check this line for bugs
                     // Do the movements since there is a change on management
-                    manager.manage ();
-                } // else {
-                if (movement.equals ("create")) {
+                    int difference = currentTime - time;
+                    for(int i = 0; i < difference; i++){
+                        manager.manage ();
+                    }
+                    //manager.manage ();
+                }
+                if (movement.equals ("CREATE")) {
                     building.enterBuilding (new Person (idGenerator++, time,
                             destFloor, direction));
-                } else if (movement.equals ("move")) {
+                } else if (movement.equals ("MOVE")) {
                     /**
                      * If moves, then take a person from the static queue in the
                      * given initial floor(current floor), move it to the new
@@ -72,12 +77,16 @@ public class Driver {
                         current.setDestinationFloor (destFloor);
                         current.setDirection (direction);
                         building.insertInFloor (initialFloor, current);
+                        System.out.println ("move");
+                    } else {
+                        current = new Person(idGenerator, time, destFloor, direction);
+                        building.insertInFloor (initialFloor, current);
                     }
-                    // TODO If no person is there, then force create a person.
-                    System.out.println ("move");
+                    
                 }
 
                 currentTime = time;
+                currentLine++;
             }
             // Close the input stream
             in.close ();
