@@ -2,13 +2,13 @@
 public class Person {
 
     private int ID;
-    private int initialTime;
+    private int waitingTime;
     private int destinationFloor;
     private int direction;
     
-    public Person(int id, int initT, int destFl, int direct){
+    public Person(int id, int waitTime, Integer destFl, Integer direct){
         setID (id);
-        setInitialTime (initT);
+        setWaitingTime (waitTime);
         setDestinationFloor (destFl);
         setDirection (direct);
     }
@@ -29,12 +29,12 @@ public class Person {
         ID = iD;
     }
 
-    public int getInitialTime () {
-        return initialTime;
+    public int getWaitingTime () {
+        return waitingTime;
     }
 
-    public void setInitialTime (int initialTime) {
-        this.initialTime = initialTime;
+    public void setWaitingTime (int waitingTime) {
+        this.waitingTime = waitingTime;
     }
 
     public int getDestinationFloor () {
