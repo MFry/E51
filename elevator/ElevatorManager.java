@@ -102,7 +102,7 @@ public class ElevatorManager {
       for (int i = 0; i < elevators.length; ++i) {
          LinkedList<Person> people = elevators[i].update();
          if (people != null) {
-            building.insertInFloor(elevators[i].getCurrentFloor(), person);
+            building.insertInFloor(elevators[i].getCurrentFloor(), people);
          }
       }
    }
@@ -119,8 +119,13 @@ public class ElevatorManager {
       generateUpQueue();
       // Generate goals for elevators going up
       for (int i = 0; i < building.floors.length; ++i) {
-         Elevator curElevator = upElevators.remove();
-
+         Elevator curElevator = null;
+         if (!upElevators.isEmpty()) {
+            curElevator = upElevators.remove();
+         } else {
+            //we have no more elevators
+            break;
+         }
          if (curElevator.getCurrentFloor() <= i) {
             int people = building.getPeople(i, Building.UP);
             if (people > 0) {
@@ -149,9 +154,14 @@ public class ElevatorManager {
       // updates the current floors of all the up elevators
       generateDownQueue();
       // generate goals for elevators going down
-      for (int i = building.floors.length - 1; i >= 0; --i) {
-         Elevator curElevator = downElevators.remove();
-
+      for (int i = building.floors.length - 1; i >= 0; --i) {  
+         Elevator curElevator = null;
+         if (!upElevators.isEmpty()) {
+            curElevator = downElevators.remove();
+         } else {
+            //we have no more elevators
+            break;
+         }
          if (curElevator.getCurrentFloor() >= i) {
             int people = building.getPeople(i, Building.DOWN);
             if (people > 0) {
