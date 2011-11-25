@@ -271,4 +271,14 @@ public class Elevator implements Comparable<Elevator> {
       }
       return 0;
    }
+    
+    /**
+     * Gets the elevator's status
+     * @return Array containing: Floor, starting floor,
+     * maximum capacity, maximum floor, distance traveled, current capacity, state
+     */
+    public int[] getInfo () {
+        int[] info = {floor, startingFloor, maxCap, maxFloor, distanceTrav, curCap, state};
+        return info;
+    }
 }
