@@ -2,10 +2,10 @@ import java.util.PriorityQueue;
 
 public class ElevatorManager {
 
-   private Elevator[] elevators; 
+   private Elevator[] elevators;
    private Building building;
    private boolean[] upRequestsServed;
-   private boolean[] downRequestsServed; 
+   private boolean[] downRequestsServed;
    PriorityQueue<Elevator> upElevators;
    PriorityQueue<Elevator> downElevators; // TODO Implement this
    PriorityQueue<Integer> curFloorsUp;
@@ -29,14 +29,13 @@ public class ElevatorManager {
       curFloorsUp = new PriorityQueue<Integer>(elevators.length, down);
       upRequestsServed = new boolean[b.floors.length];
       downRequestsServed = new boolean[b.floors.length];
-      upElevators = new PriorityQueue<Elevator> (); // Roger added this
-      
    }
 
    private void setMode(String mode) {
       /***
        * Extracts the string for valid modes
        */
+      // TODO Complete setMode for other mode that we will add
       for (int i = 0; i < mode.length(); ++i) {
          if ('d' == mode.charAt(i)) {
             dumbMode = true;
@@ -46,22 +45,27 @@ public class ElevatorManager {
 
    public void manage() {
 
-      // this cannot and should not happen
+      // this should not happen
       assert elevators == null;
       assert building == null;
+      // TODO Create other modes
       if (dumbMode == true) {
          dumbManage();
       }
+
    }
 
    private void generateUpQueue() {
-      //TODO Write documentation
-       // By Roger: don't forget to check if the elevators are empty
-       // because this adds a empty elevator to the queue
+      // TODO Write documentation
       for (int i = 0; i < elevators.length; ++i) {
          if (elevators[i].getState() == Elevator.UP
-               || elevators[i].getState() == Elevator.STATIC) {
-            upElevators.add(elevators[i]);
+               || elevators[i].getState() == Elevator.STATIC) { // TODO THIS
+                                                                // BEHAVIOUR
+                                                                // NEEDS TO BE
+                                                                // NOTED
+            if (!elevators[i].isFull()) { // Ignores full elevators
+               upElevators.add(elevators[i]);
+            }
          }
       }
    }
@@ -79,35 +83,38 @@ public class ElevatorManager {
    }
 
    private void dumbManage() {
-      // updates the current floors of all the elevators
+      /***
+       * The dumb elevator follows a very strict and poorly optimized: 1. The
+       * elevator must go completely down or up before it picks up people 2. The
+       * elevator will not pick up people going down until it switches to down
+       * state
+       * NOTES Dumb Elevator does not have a static mode
+       */
+
+      // updates the current floors of all the up elevators
       generateUpQueue();
       // Generate goals for elevators going up
-
       for (int i = 0; i < building.floors.length; ++i) {
          Elevator curElevator = upElevators.remove();
-         // Checks if the elevator is full, if it is it will remove the next one
-         if (curElevator.isFull()) {
-            --i;
-            continue;
-         }
+
          if (curElevator.getCurrentFloor() <= i) {
-           int people = building.getPeople(i, Elevator.UP); 
-           if (curElevator.getCurrentFloor() == i) {
-               // Check if there are people on this floor waiting for the
-               // elevator
-               
-               if (people > 0) {
-                  // take as many people as possible
+            int people = building.getPeople(i, Elevator.UP);
+            if (people > 0) {
+               if (curElevator.getCurrentFloor() == i) {
+                  // Take as many people from this floor
+                  // as the elevator allows
                   while (!curElevator.isFull() && people > 0) {
                      curElevator.enter(building.remove(i, Building.UP));
                      --people;
                   }
+               } else {// The elevator has yet to reach this floor
+                  // generate goals for elevator
+                  if (people > 0 && !upRequestsServed[i]) {
+                     curElevator.setGoal(i); // TODO For the more intelligent
+                                             // elevator we will need a
+                                             // scheduler
+                  }
                }
-            } else { //The elevator has yet to reach this floor
-              //generate goals for elevator 
-              if (people > 0 && !upRequestsServed[i]) {
-                 curElevator.setGoal(i); //TODO For the more intelligent elevator we will need a scheduler
-              }
             }
          }
       }
