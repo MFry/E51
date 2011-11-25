@@ -1,3 +1,4 @@
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class ElevatorManager {
@@ -8,7 +9,6 @@ public class ElevatorManager {
    private boolean[] downRequestsServed;
    PriorityQueue<Elevator> upElevators;
    PriorityQueue<Elevator> downElevators; // TODO Implement this
-   PriorityQueue<Integer> curFloorsUp;
    /*
     * Mode available: d - Dumb mode (An elevator cannot switch states until it
     * hits the top floor
@@ -25,8 +25,10 @@ public class ElevatorManager {
       setMode(mode);
       this.elevators = e;
       this.building = b;
-      FloorComparatorDown down = new FloorComparatorDown();
-      curFloorsUp = new PriorityQueue<Integer>(elevators.length, down);
+      ElevatorComparatorAscending up = new ElevatorComparatorAscending();
+      ElevatorComparatorDescending down = new ElevatorComparatorDescending();
+      upElevators = new PriorityQueue<Elevator>(e.length, up);
+      downElevators = new PriorityQueue<Elevator>(e.length, down);
       upRequestsServed = new boolean[b.floors.length];
       downRequestsServed = new boolean[b.floors.length];
    }
@@ -70,6 +72,20 @@ public class ElevatorManager {
       }
    }
 
+   private void generateDownQueue() {
+      for (int i = 0; i < elevators.length; ++i) {
+         if (elevators[i].getState() == Elevator.DOWN
+               || elevators[i].getState() == Elevator.STATIC) { // TODO THIS
+                                                                // BEHAVIOUR
+                                                                // NEEDS TO BE
+                                                                // NOTED
+            if (!elevators[i].isFull()) { // Ignores full elevators
+               downElevators.add(elevators[i]);
+            }
+         }
+      }
+   }
+
    private Elevator getElevator(int elevatorFloor, int state) {
 
       for (int i = 0; i < elevators.length; ++i) {
@@ -82,45 +98,93 @@ public class ElevatorManager {
       return null;
    }
 
+   private void runAllElevators() {
+      for (int i = 0; i < elevators.length; ++i) {
+         LinkedList<Person> people = elevators[i].update();
+         if (people != null) {
+            building.insertInFloor(elevators[i].getCurrentFloor(), people);
+         }
+      }
+   }
+
    private void dumbManage() {
       /***
        * The dumb elevator follows a very strict and poorly optimized: 1. The
        * elevator must go completely down or up before it picks up people 2. The
        * elevator will not pick up people going down until it switches to down
-       * state
-       * NOTES Dumb Elevator does not have a static mode
+       * state NOTES Dumb Elevator does not have a static mode
        */
 
       // updates the current floors of all the up elevators
       generateUpQueue();
       // Generate goals for elevators going up
-      for (int i = 0; i < building.floors.length; ++i) {
-         Elevator curElevator = upElevators.remove();
-
-         if (curElevator.getCurrentFloor() <= i) {
-            int people = building.getPeople(i, Elevator.UP);
-            if (people > 0) {
-               if (curElevator.getCurrentFloor() == i) {
-                  // Take as many people from this floor
-                  // as the elevator allows
-                  while (!curElevator.isFull() && people > 0) {
-                     curElevator.enter(building.remove(i, Building.UP));
-                     --people;
-                  }
-               } else {// The elevator has yet to reach this floor
-                  // generate goals for elevator
-                  if (people > 0 && !upRequestsServed[i]) {
-                     curElevator.setGoal(i); // TODO For the more intelligent
-                                             // elevator we will need a
-                                             // scheduler
+      Elevator curElevator = null;
+      while (!upElevators.isEmpty()) {
+         curElevator = upElevators.remove();
+         for (int i = 0; i < building.floors.length; ++i) {
+            if (curElevator.getCurrentFloor() <= i) {
+               int people = building.getPeople(i, Building.UP);
+               if (people > 0) {
+                  // We only do work for floors that have people on them
+                  if (curElevator.getCurrentFloor() == i) {
+                     // Take as many people from this floor
+                     // as the elevator allows
+                     upRequestsServed[i] = false; // An elevator has serviced
+                                                  // the
+                                                  // floor
+                     while (!curElevator.isFull() && people > 0) {
+                        curElevator.enter(building.remove(i, Building.UP));
+                        --people;
+                     }
+                  } else {// The elevator has yet to reach this floor
+                     // generate goals for elevator
+                     if (people > 0 && !upRequestsServed[i]) {
+                        upRequestsServed[i] = true;
+                        curElevator.setGoal(i); // TODO For the more intelligent
+                                                // elevator we will need a
+                                                // scheduler
+                     }
                   }
                }
             }
          }
       }
+      // updates the current floors of all the up elevators
+      generateDownQueue();
       // generate goals for elevators going down
-
+      while (!downElevators.isEmpty()) {
+         curElevator = downElevators.remove();
+         for (int i = building.floors.length - 1; i >= 0; --i) {
+            if (curElevator.getCurrentFloor() >= i) {
+               int people = building.getPeople(i, Building.DOWN);
+               if (people > 0) {
+                  // We only do work for floors that have people on them
+                  if (curElevator.getCurrentFloor() == i) {
+                     // Take as many people from this floor
+                     // as the elevator allows
+                     downRequestsServed[i] = false; // An elevator has serviced
+                                                    // the
+                                                    // floor
+                     while (!curElevator.isFull() && people > 0) {
+                        curElevator.enter(building.remove(i, Building.DOWN));
+                        --people;
+                     }
+                  } else {// The elevator has yet to reach this floor
+                     // generate goals for elevator
+                     if (people > 0 && !downRequestsServed[i]) {
+                        downRequestsServed[i] = true;
+                        curElevator.setGoal(i); // TODO For the more intelligent
+                                                // elevator we will need a
+                                                // scheduler
+                     }
+                  }
+               }
+            }
+         }
+      }
+      runAllElevators();
    }
+
    // It will need to poll the building to see which floor has the most people
 
 }

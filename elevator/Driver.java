@@ -4,11 +4,6 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
-/**
- * 
- * 
- *
- */
 public class Driver {
 
     // Create a method that reads input from Joe's output
@@ -17,21 +12,27 @@ public class Driver {
     public static int idGenerator = 1;
 
     public static void main (String[] args) {
+        
+        runDriver ();
+    }
+
+    private static void runDriver () {
+        /**
+         * This method reads output from the test case generator. The output contains the format
+         *  <command> <time><direction><initialFloor><destinationFloor>
+         *  Given the command, move or create, then the driver will either insert the person in the building,
+         *  or get the person ready in the queue towards its direction.
+         *  Manager will start moving when there is a change in time. 
+         */
         Building building = new Building (10, 1);
         Elevator[] elevators = new Elevator[1];
         for(int i = 0; i < elevators.length; i++){
             elevators[i] = new Elevator(10, 0, 10, "d");
         }
         ElevatorManager manager = new ElevatorManager(elevators, building, "d");
-        /**
-         * TODO For every time unit the manager should do something
-         * Check according to the state, if person has to be created or moved.
-         */
+        // Read file line by line
         try {
-            // Open the file that is the first
-            // command line parameter
             FileInputStream fstream = new FileInputStream ("test.txt");
-            // Get the object of DataInputStream
             DataInputStream in = new DataInputStream (fstream);
             BufferedReader br = new BufferedReader (new InputStreamReader (in));
             String strLine;
@@ -39,16 +40,18 @@ public class Driver {
             String movement;
             int time=0;
             int currentTime = 0;
+            int initialFloor;
             int destFloor;
             int direction;
-            // Read File Line By Line
             while ( ( strLine = br.readLine ()) != null) {
                 // Manage for every single time
                 scan = new Scanner(strLine);
                 movement = scan.next ();
                 time = scan.nextInt ();
                 direction = scan.nextInt ();
+                initialFloor = scan.nextInt ();
                 destFloor = scan.nextInt ();
+                Person current;
                 if((time != currentTime)){ // check this line for bugs
                     // Do the movements since there is a change on management
                     manager.manage ();
@@ -58,8 +61,13 @@ public class Driver {
                     }
                     else if (movement.equals("move")) {
                         /**
-                         * TODO How do I see what floor I am currently in if the buildings does not allow me to do that?
+                         * If moves, then take a person from the static queue in the given initial floor(current floor),
+                         * move it to the new queue, given its direction and new floor.
                          */
+                        current = building.remove(initialFloor, Building.STATIC);
+                        current.setDestinationFloor (destFloor);
+                        current.setDirection (direction);
+                        building.insertInFloor (initialFloor, current);
                         System.out.println("move");
                     }
                 }
