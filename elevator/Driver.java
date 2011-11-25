@@ -12,24 +12,25 @@ public class Driver {
     public static int idGenerator = 1;
 
     public static void main (String[] args) {
-        
+
         runDriver ();
     }
 
     private static void runDriver () {
         /**
-         * This method reads output from the test case generator. The output contains the format
-         *  <command> <time><direction><initialFloor><destinationFloor>
-         *  Given the command, move or create, then the driver will either insert the person in the building,
-         *  or get the person ready in the queue towards its direction.
-         *  Manager will start moving when there is a change in time. 
+         * This method reads output from the test case generator. The output
+         * contains the format <command>
+         * <time><direction><initialFloor><destinationFloor> Given the command,
+         * move or create, then the driver will either insert the person in the
+         * building, or get the person ready in the queue towards its direction.
+         * Manager will start moving when there is a change in time.
          */
         Building building = new Building (10, 1);
         Elevator[] elevators = new Elevator[1];
-        for(int i = 0; i < elevators.length; i++){
-            elevators[i] = new Elevator(10, 0, 10, "d");
+        for (int i = 0; i < elevators.length; i++) {
+            elevators[i] = new Elevator (10, 0, 10, "d");
         }
-        ElevatorManager manager = new ElevatorManager(elevators, building, "d");
+        ElevatorManager manager = new ElevatorManager (elevators, building, "d");
         // Read file line by line
         try {
             FileInputStream fstream = new FileInputStream ("test.txt");
@@ -38,38 +39,42 @@ public class Driver {
             String strLine;
             Scanner scan;
             String movement;
-            int time=0;
+            int time = 0;
             int currentTime = 0;
             int initialFloor;
             int destFloor;
             int direction;
             while ( ( strLine = br.readLine ()) != null) {
                 // Manage for every single time
-                scan = new Scanner(strLine);
+                scan = new Scanner (strLine);
                 movement = scan.next ();
                 time = scan.nextInt ();
                 direction = scan.nextInt ();
                 initialFloor = scan.nextInt ();
                 destFloor = scan.nextInt ();
                 Person current;
-                if((time != currentTime)){ // check this line for bugs
+                if ( ( time != currentTime)) { // check this line for bugs
                     // Do the movements since there is a change on management
                     manager.manage ();
-                } else {
-                    if (movement.equals ("create")){
-                        building.enterBuilding (new Person(idGenerator++, time, destFloor, direction));
-                    }
-                    else if (movement.equals("move")) {
-                        /**
-                         * If moves, then take a person from the static queue in the given initial floor(current floor),
-                         * move it to the new queue, given its direction and new floor.
-                         */
+                } // else {
+                if (movement.equals ("create")) {
+                    building.enterBuilding (new Person (idGenerator++, time,
+                            destFloor, direction));
+                } else if (movement.equals ("move")) {
+                    /**
+                     * If moves, then take a person from the static queue in the
+                     * given initial floor(current floor), move it to the new
+                     * queue, given its direction and new floor.
+                     */
+
+                    if(building.floors[initialFloor][Building.STATIC].size ()>0){
                         current = building.remove(initialFloor, Building.STATIC);
                         current.setDestinationFloor (destFloor);
                         current.setDirection (direction);
                         building.insertInFloor (initialFloor, current);
-                        System.out.println("move");
                     }
+                    // TODO If no person is there, then force create a person.
+                    System.out.println ("move");
                 }
 
                 currentTime = time;
