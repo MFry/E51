@@ -109,12 +109,12 @@ public class Elevator implements Comparable<Elevator> {
     * it priorities based on the new state of the elevator
     */
    private void setState(int newState) {
-
       if (newState > 0) {
          goals = new PriorityQueue<Integer>(2 * maxCap, up);
       } else {
          goals = new PriorityQueue<Integer>(2 * maxCap, down);
       }
+      this.state = newState;
    }
 
    /***
@@ -212,11 +212,10 @@ public class Elevator implements Comparable<Elevator> {
     * Updates the elevator's state should the elevator reach the max floor
     */
    private void checkRange() {
-      // TODO CREATE LOWER BOUND 
-      if (floor == maxFloor) {
+      if (floor == maxFloor && state > 0 || floor == minFloor && state < 0) {
          assert !goals.isEmpty(); // If the goals are not empty this is a bug
          setState(state * -1);
-      }
+      } 
    }
 
    /***
@@ -279,5 +278,10 @@ public class Elevator implements Comparable<Elevator> {
          return -1;
       }
       return 0;
+   }
+
+   public int[] getInfo () {
+      int[] info = {floor, startingFloor, maxCap, maxFloor, distanceTrav, curCap, state};
+      return info;
    }
 }
