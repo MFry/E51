@@ -46,7 +46,7 @@ public class BuildingSwing {
 
       // Generate the elevators
       for (int i = 0; i < numElevators; i++) {
-         elevator[i] = new ElevatorSlider (inputElevators[i], i);
+         elevator[i] = new ElevatorSlider (inputElevators[i], i + 1);
          frame.add (elevator[i]);
       }
       frame.setLayout (new FlowLayout ());
