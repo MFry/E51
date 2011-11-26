@@ -5,12 +5,22 @@ public class JPerson implements Comparator, Comparable {
     int direction; // 1 for up, 0 for down
     int initialFloor; // 0 is ground floor
     int destinationFloor; // 0 is ground floor
+    String createOrMove;
 
-    JPerson(int time_1, int direction_1, int initFloor_1, int destFloor_1) {
+    JPerson(int time_1, int direction_1, int initFloor_1, int destFloor_1, String createOrMove_1) {
         time = time_1;
         direction = direction_1;
         initialFloor = initFloor_1;
         destinationFloor = destFloor_1;
+        createOrMove = createOrMove_1;
+    }
+
+    public String getCreateOrMove () {
+        return createOrMove;
+    }
+
+    public void setCreateOrMove (String createOrMove) {
+        this.createOrMove = createOrMove;
     }
 
     public int getTime () {
