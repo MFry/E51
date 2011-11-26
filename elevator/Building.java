@@ -101,13 +101,6 @@ public class Building {
    // Removes the first person on the queue according to its direction
    public Person remove(int floor, int direction) {
       Person test;
-      if ( direction == -1){
-          direction = DOWN;
-      } else if (direction == 1){
-          direction = UP;
-      } else {
-          direction = STATIC;
-      }
       test = floors[floor][direction].remove(0);
       return test;
    }
