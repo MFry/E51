@@ -25,7 +25,7 @@ public class ElevatorSlider extends JPanel {
    private static final int HEIGHT_PER_FLOOR = 10;
 
    /** Width that each slider takes up */
-   private static final int SLIDER_WIDTH = 100;
+   private static final int SLIDER_WIDTH = 120;
 
    /** Slider to represent the elevator's position */
    JSlider slider;
@@ -108,15 +108,15 @@ public class ElevatorSlider extends JPanel {
     */
    public void buildStrings (int name, int currCap, int maxCap, int currFloor,
    int dir) {
-      char state = 'E'; // E is for error
+      String state = "Error"; // E is for error
       if (dir == -1) {
-         state = '-';
+         state = "Down";
       } else if (dir == 0) {
-         state = '=';
+         state = "Stopped";
       } else if (dir == 1) {
-         state = '+';
+         state = "Up";
       }
-      String stateStr = "#" + name + state;
+      String stateStr = "#" + name + " " + state;
       String capStr = "" + currCap + "/" + maxCap + " ppl";
       String floorStr = "Floor " + currFloor;
       stateLabel.setText (stateStr);
