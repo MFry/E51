@@ -1,0 +1,6 @@
+Max Capacity: 100
+Number of Day Shift Employees: 60
+Number of Night Shift Employees: 5
+Number of Guests: 30
+Number of Days Generated: 1
+Number of Elevator calls: 445
