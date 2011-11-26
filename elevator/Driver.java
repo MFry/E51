@@ -28,7 +28,7 @@ public class Driver {
         Building building = new Building (10, 3);
         Elevator[] elevators = new Elevator[building.getNumElevators ()];
         for (int i = 0; i < elevators.length; i++) {
-            elevators[i] = new Elevator (10, 0, 10, "d");
+            elevators[i] = new Elevator (10, 0, 10, 0, "d");
         }
         ElevatorManager manager = new ElevatorManager (elevators, building, "d");
         // Read file line by line
@@ -56,7 +56,7 @@ public class Driver {
                 Person current;
                 if ( ( time != currentTime) && currentLine!=0) { // check this line for bugs
                     // Do the movements since there is a change on management
-                    int difference = currentTime - time;
+                    int difference = time - currentTime;
                     for(int i = 0; i < difference; i++){
                         manager.manage ();
                     }
