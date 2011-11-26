@@ -31,6 +31,8 @@ public class Driver {
             elevators[i] = new Elevator (10, 0, 9, 0, "d");
         }
         ElevatorManager manager = new ElevatorManager (elevators, building, "d");
+        //BuildingSwing gui = new BuildingSwing (10,3);
+        //gui.init (elevators);
         // Read file line by line
         try {
             FileInputStream fstream = new FileInputStream ("rawOutput.txt");
@@ -85,7 +87,7 @@ public class Driver {
                     }
                     
                 }
-
+                //gui.update (100, elevators);
                 currentTime = time;
                 currentLine++;
             }
