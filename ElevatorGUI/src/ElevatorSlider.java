@@ -30,9 +30,9 @@ public class ElevatorSlider extends JPanel {
    /** Slider to represent the elevator's position */
    JSlider slider;
    /** Labels containing the strings with the info about the elevator */
-   JLabel stateLabel;
-   JLabel capLabel;
-   JLabel floorLabel;
+   JLabel stateLabel = new JLabel ();
+   JLabel capLabel = new JLabel ();
+   JLabel floorLabel = new JLabel ();
    /** Elevator that this object describes */
    Elevator elevator;
    int currFloor;
@@ -85,9 +85,6 @@ public class ElevatorSlider extends JPanel {
       getInfo ();
       // Create a label for its current condition
       buildStrings (name, currCap, maxCap, currFloor, state);
-      stateLabel.repaint ();
-      capLabel.repaint ();
-      floorLabel.repaint ();
       slider.setValue (currFloor);
    }
 
@@ -111,8 +108,6 @@ public class ElevatorSlider extends JPanel {
     */
    public void buildStrings (int name, int currCap, int maxCap, int currFloor,
    int dir) {
-      String stateStr = "#" + name;
-      // Identify the elevator's current state
       char state = 'E'; // E is for error
       if (dir == -1) {
          state = '-';
@@ -121,12 +116,11 @@ public class ElevatorSlider extends JPanel {
       } else if (dir == 1) {
          state = '+';
       }
-      // Add the state to the ID
-      stateStr += state + "\n";
+      String stateStr = "#" + name + state;
       String capStr = "" + currCap + "/" + maxCap + " ppl";
       String floorStr = "Floor " + currFloor;
-      stateLabel = new JLabel (stateStr);
-      capLabel = new JLabel (capStr);
-      floorLabel = new JLabel (floorStr);
+      stateLabel.setText (stateStr);
+      capLabel.setText (capStr);
+      floorLabel.setText (floorStr);
    }
 }

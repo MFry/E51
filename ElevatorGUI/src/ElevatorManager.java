@@ -8,20 +8,31 @@ public class ElevatorManager {
    private boolean[] upRequestsServed;
    private boolean[] downRequestsServed;
    PriorityQueue<Elevator> upElevators;
-   PriorityQueue<Elevator> downElevators; // TODO Implement this
+   PriorityQueue<Elevator> downElevators;
+   //INTELI ELEVATOR
+   private int[][] oldBuildingState;
    /*
     * Mode available: d - Dumb mode (An elevator cannot switch states until it
     * hits the top floor
     */
    private boolean dumbMode;
 
+   private static final int DOWN = 0;
+   private static final int UP = 1;
+   
    // TODO: Be able to output the proper statistics
-
+   /***
+    * Given the elevator and building the elevator will manage the elevators in
+    * constraint to the modes set
+    * 
+    * @param e
+    *           An array of all the elevators
+    * @param b
+    *           The building
+    * @param mode
+    *           A string of modes that are set
+    */
    public ElevatorManager(Elevator[] e, Building b, String mode) {
-      /***
-       * Given the elevator and building the elevator will manage the elevators
-       * in constraint to the modes set
-       */
       setMode(mode);
       this.elevators = e;
       this.building = b;
@@ -31,19 +42,20 @@ public class ElevatorManager {
       downElevators = new PriorityQueue<Elevator>(e.length, down);
       upRequestsServed = new boolean[b.floors.length];
       downRequestsServed = new boolean[b.floors.length];
-      init();
+      oldBuildingState = new int[b.numbFloors][2]; //Its 2 instead of 3 because we do not care about people that do not want to move 
+      init(); //TODO recode this
    }
 
-   private void init () {
-      //TODO Documentation
-      //Sets all elevators on the bottom floor to an up state
+   private void init() {
+      // TODO Documentation
+      // Sets all elevators on the bottom floor to an up state
       for (int i = 0; i < elevators.length; ++i) {
          if (elevators[i].getCurrentFloor() == 0) {
             elevators[i].changeState(Elevator.UP);
          }
       }
    }
-   
+
    private void setMode(String mode) {
       /***
        * Extracts the string for valid modes
@@ -57,7 +69,6 @@ public class ElevatorManager {
    }
 
    public void manage() {
-
       // this should not happen
       assert elevators == null;
       assert building == null;
@@ -65,7 +76,6 @@ public class ElevatorManager {
       if (dumbMode == true) {
          dumbManage();
       }
-
    }
 
    private void generateUpQueue() {
@@ -109,6 +119,9 @@ public class ElevatorManager {
       return null;
    }
 
+   /***
+    * Runs all elevators a single unit time
+    */
    private void runAllElevators() {
       for (int i = 0; i < elevators.length; ++i) {
          LinkedList<Person> people = elevators[i].update();
@@ -117,15 +130,14 @@ public class ElevatorManager {
          }
       }
    }
-
+   
+   /***
+    * The dumb elevator follows a very strict and poorly optimized: 1. The
+    * elevator must go completely down or up before it picks up people 2. The
+    * elevator will not pick up people going down until it switches to down
+    * state NOTES Dumb Elevator does not have a static mode
+    */
    private void dumbManage() {
-      /***
-       * The dumb elevator follows a very strict and poorly optimized: 1. The
-       * elevator must go completely down or up before it picks up people 2. The
-       * elevator will not pick up people going down until it switches to down
-       * state NOTES Dumb Elevator does not have a static mode
-       */
-
       // updates the current floors of all the up elevators
       generateUpQueue();
       // Generate goals for elevators going up
@@ -160,6 +172,7 @@ public class ElevatorManager {
             }
          }
       }
+      
       // updates the current floors of all the up elevators
       generateDownQueue();
       // generate goals for elevators going down
@@ -197,5 +210,29 @@ public class ElevatorManager {
    }
 
    // It will need to poll the building to see which floor has the most people
+   private void smartElevator() {
+      if (checkBuildingState ()) {
+         
+      }
+   }
+   
+   private boolean checkBuildingState() {
+      boolean changeOccured = false; //Assume no chage
+      for (int i = 0; i < building.numbFloors; ++i) {
+         //Check the current building state by comparing new state to old state
+         int upState = building.getPeople(i, Building.UP) - oldBuildingState[i][ElevatorManager.UP];
+         int downState = building.getPeople(i, Building.DOWN) - oldBuildingState[i][ElevatorManager.DOWN];
+         if (upState > 0 || downState > 0) {
+            changeOccured = true; //change occured
+         }
+         oldBuildingState[i][ElevatorManager.UP] = upState;
+         oldBuildingState[i][ElevatorManager.DOWN] = downState;
+      }
+      return changeOccured;
+   }
 
+   private void intelliScheduler() {
+      
+   }
+   
 }
