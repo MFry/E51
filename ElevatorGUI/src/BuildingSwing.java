@@ -35,7 +35,7 @@ public class BuildingSwing {
    /**
     * Generates the building view using sliders to represent the elevators
     */
-   public void init () {
+   public void init (Elevator[] inputElevators) {
       System.out.println ("Creating GUI");
       // Create a JFrame with "Elevator Proposal" as the title
       frame = new JFrame ("Building View");
@@ -46,9 +46,8 @@ public class BuildingSwing {
 
       // Generate the elevators
       for (int i = 0; i < numElevators; i++) {
-         elevator[i] = new ElevatorSlider (new Elevator (100, 0, 80, "d"));
+         elevator[i] = new ElevatorSlider (inputElevators[i], i);
          frame.add (elevator[i]);
-
       }
       frame.setLayout (new FlowLayout ());
       frame.setVisible (true);
@@ -64,19 +63,10 @@ public class BuildingSwing {
    public void update (int rate, Elevator[] elevators)
    throws InterruptedException {
       // Get the state of each individual elevator and then update
-
-      // Get the new values of the elevators
       for (int i = 0; i < numElevators; i++) {
          // Update the value
-         elevator[i].update (elevators[i]);
+         elevator[i].update (elevators[i], i);
       }
       Thread.sleep (rate);
-
-   }
-
-   public static void main (String[] args) throws InterruptedException {
-      BuildingSwing building = new BuildingSwing (50, 10);
-      building.init ();
-
    }
 }
