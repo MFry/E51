@@ -11,6 +11,7 @@ public class ElevatorManager {
    PriorityQueue<Elevator> downElevators;
    //INTELI ELEVATOR
    private int[][] oldBuildingState;
+   private int priorityFieldDistance = 2;
    /*
     * Mode available: d - Dumb mode (An elevator cannot switch states until it
     * hits the top floor
@@ -233,6 +234,43 @@ public class ElevatorManager {
 
    private void intelliScheduler() {
       
+   }
+   
+   private LinkedList<Elevator> generatePriorityFields (int direction, int floor) {
+       
+       // create LinkList that will hold all the elevators in the building
+       // and it will be gradually decreased until it contains all the
+       // desirable elevators 
+       LinkedList<Elevator> elevatorList = new LinkedList<Elevator>();
+       
+       // add all the elevators initially
+       for (int i = 0; i < elevators.length; i++) {
+           elevatorList.add (elevators[i]);
+       }
+       
+       // remove all elevators that we don't need
+       // which at this point, are all the ones that are full
+       for (Elevator elevator : elevatorList) {
+           if (elevator.isFull ()) {
+               elevatorList.remove (elevator);
+           }
+       }
+       
+       // remove elevators moving in the opposite direction that are NOT empty
+       for (Elevator elevator : elevatorList) {
+           if ( !elevator.isEmpty() && elevator.getState () !=  direction) {
+               elevatorList.remove (elevator);
+           }
+       }
+       
+       // remove ones that are not within the desired proximity
+       for (Elevator elevator : elevatorList) {
+           if ( (elevator.getCurrentFloor () > floor + priorityFieldDistance) || (elevator.getCurrentFloor () < floor - priorityFieldDistance) ) {
+               elevatorList.remove (elevator);
+           }
+       }
+       
+       return elevatorList;
    }
    
 }
