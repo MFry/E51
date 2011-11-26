@@ -164,6 +164,11 @@ public class Elevator implements Comparable<Elevator> {
       return false;
    }
 
+   /*** @Returns whether the elevator is empty */ 
+   public boolean isEmpty () {
+      return curCap == 0;
+   }
+   
    /***
     * Takes the input f (floor) and check if its a valid floor. Example: if f is
     * somewhere below the current floor of the elevator but the elevator is
@@ -187,10 +192,12 @@ public class Elevator implements Comparable<Elevator> {
    public boolean enter(Person p) {
 
       if (curCap == maxCap) {
+         assert false; //TODO Fix this code
          return false;
       }
       int floorWanted = p.getDestinationFloor();
       if (!checkValid(floorWanted)) {
+         assert false; //TODO Fix this
          return false;
       }
       goals.add(floorWanted);
@@ -204,6 +211,7 @@ public class Elevator implements Comparable<Elevator> {
          newGroup.add(p);
          contains.put(floorWanted, newGroup);
       }
+      assert curCap >= 0; //It should never be negative
       curCap++;
       return true;
    }
