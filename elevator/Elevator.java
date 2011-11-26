@@ -213,7 +213,7 @@ public class Elevator implements Comparable<Elevator> {
     */
    private void checkRange() {
       if (floor == maxFloor && state > 0 || floor == minFloor && state < 0) {
-         assert !goals.isEmpty(); // If the goals are not empty this is a bug
+         assert (goals.isEmpty()); // If the goals are not empty this is a bug
          setState(state * -1);
       } 
    }
@@ -235,6 +235,9 @@ public class Elevator implements Comparable<Elevator> {
             // int key = goals.remove(); //Good idea by Roger
             while (localGoal == floor) {
                goals.remove();
+               if(goals.isEmpty ()){
+                   break;
+               }
                localGoal = goals.peek();
             }
             LinkedList<Person> peopleLeaving = contains.get(destination); // TODO
@@ -247,11 +250,13 @@ public class Elevator implements Comparable<Elevator> {
             if (peopleLeaving != null) {
                this.curCap -= peopleLeaving.size();
             }
+            checkRange();
             return peopleLeaving; // Returns the group of people departing on
                                   // this floor
          }
       } else if (dumbMode) {
          move ();
+         checkRange();
       } else {
          state = STATIC; // we have nothing to do
       }
@@ -261,7 +266,7 @@ public class Elevator implements Comparable<Elevator> {
    public void move () {
       floor += state;
       distanceTrav += 1;
-      checkRange();
+      //checkRange();
    }
    
    /***
