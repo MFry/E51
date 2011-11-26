@@ -24,7 +24,7 @@ public class Elevator implements Comparable<Elevator> {
    public static final int UP = 1;
 
    private static final char dMode = 'd';
-   
+
    // TODO Update the elevator software so that it automatically switches states
    // if it hits maxFloor
 
@@ -271,14 +271,14 @@ public class Elevator implements Comparable<Elevator> {
       }
       return 0;
    }
-   
-   /**
-    * Gets the elevator's status
-    * @return Array containing: Floor, starting floor,
-    * maximum capacity, maximum floor, distance traveled, current capacity, state
-    */
-   public int[] getInfo () {
-      int[] info = {floor, startingFloor, maxCap, maxFloor, distanceTrav, curCap, state};
-      return info;
-   }
+    
+    /**
+     * Gets the elevator's status
+     * @return Array containing: Floor, starting floor,
+     * maximum capacity, maximum floor, distance traveled, current capacity, state
+     */
+    public int[] getInfo () {
+        int[] info = {floor, startingFloor, maxCap, maxFloor, distanceTrav, curCap, state};
+        return info;
+    }
 }

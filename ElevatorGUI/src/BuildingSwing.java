@@ -61,21 +61,22 @@ public class BuildingSwing {
     * @param rate The number of milliseconds between "frames"
     * @throws InterruptedException 
     */
-   public void update (int rate) throws InterruptedException {
+   public void update (int rate, Elevator[] elevators)
+   throws InterruptedException {
       // Get the state of each individual elevator and then update
-      while (true) {
-         // Get the new values of the elevators
-         for (int i = 0; i < numElevators; i++) {
-            // Update the value
-            elevator[i].update ();
-         }
-         Thread.sleep (rate);
+
+      // Get the new values of the elevators
+      for (int i = 0; i < numElevators; i++) {
+         // Update the value
+         elevator[i].update (elevators[i]);
       }
+      Thread.sleep (rate);
+
    }
 
    public static void main (String[] args) throws InterruptedException {
       BuildingSwing building = new BuildingSwing (50, 10);
       building.init ();
-      building.update (100);
+
    }
 }

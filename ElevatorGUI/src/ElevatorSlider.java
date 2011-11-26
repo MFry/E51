@@ -46,22 +46,27 @@ public class ElevatorSlider extends JPanel {
     * @param e Elevator to create the slider for
     */
    public ElevatorSlider (Elevator e) {
-      // Calculate the dimensions for the sliders
-      int width = SLIDER_WIDTH;
-      int height = HEIGHT_PER_FLOOR * numFloors;
-      int heightResize = 1 + (numFloors / FLOOR_LIMIT);
-      height /= heightResize;
+      elevator = e;
       // Create the slider and adjust its properties
       slider = new JSlider (JSlider.VERTICAL, 0, 100, 0);
       slider.setMajorTickSpacing (MAJOR_TICK_SPACING);
       slider.setMinorTickSpacing (MINOR_TICK_SPACING);
       slider.setPaintTicks (true);
       slider.setPaintLabels (true);
+      update (e);
+      // Calculate the dimensions for the sliders
+      int width = SLIDER_WIDTH;
+      int height = HEIGHT_PER_FLOOR * numFloors;
+      int heightResize = 1 + (numFloors / FLOOR_LIMIT);
+      height /= heightResize;
       slider.setPreferredSize (new Dimension (width, height));
+      // Add the slider
+      this.add (slider);
+      // Add the label to the panel
+      this.add (label);
+      update (elevator);
       // Set the layout
       this.setLayout (new BoxLayout (this, BoxLayout.Y_AXIS));
-      elevator = e;
-      update ();
    }
 
    /**
@@ -70,17 +75,14 @@ public class ElevatorSlider extends JPanel {
     * @param floor Floor it is now on
     * @param c Current carrying capacity
     */
-   public void update () {
-      // Remove all elements
-      this.removeAll ();
+   public void update (Elevator e) {
+      elevator = e;
       // Update the numerical information
       getInfo ();
-      // Add the slider
-      this.add (slider);
       // Create a label for its current condition
-      buildString ("BOB", currCap, maxCap, currFloor, state);
-      // Add the label to the panel
-      this.add (label);
+      buildString ("1", currCap, maxCap, currFloor, state);
+      label = new JLabel (labelStr);
+      label.repaint ();
       slider.setValue (currFloor);
    }
 

@@ -8,7 +8,13 @@ public class Person {
     public static int UP = 1;
     public static int STATIC = 0;
     public static int DOWN = -1;
-    
+    /**
+     * Person constructor
+     * @param id
+     * @param waitTime
+     * @param destFl
+     * @param direct
+     */
     public Person(int id, int waitTime, Integer destFl, Integer direct){
         setID (id);
         setWaitingTime (waitTime);
