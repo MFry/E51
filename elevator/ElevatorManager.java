@@ -172,6 +172,17 @@ public class ElevatorManager {
    }
 
    /***
+    * Creates a copy of the building after manage has completed most of its function
+    */
+   private void updateOldBuildingState() {
+      for (int i = 0; i < building.numbElevators; ++i) {
+         oldBuildingState[i][Building.UP] = building.getPeople(i, Building.UP);
+         oldBuildingState[i][Building.DOWN] = building.getPeople(i, Building.DOWN);
+      }
+      
+   }
+   
+   /***
     * Runs all elevators a single unit time
     */
    private void runAllElevators() {
@@ -183,6 +194,8 @@ public class ElevatorManager {
       }
    }
 
+   
+   
    /***
     * The dumb elevator follows a very strict and poorly optimized: 1. The
     * elevator must go completely down or up before it picks up people 2. The
@@ -277,7 +290,11 @@ public class ElevatorManager {
          int[] buildingOrder = intelliScheduler(Building.UP);
       }
       // TODO Update oldBuildingState
+      //Very last thing
+      updateOldBuildingState ();
    }
+
+   
 
    // TODO JOE TEST THIS
    private boolean checkBuildingState() {
@@ -299,6 +316,37 @@ public class ElevatorManager {
       return changeOccured;
    }
 
+   // TODO JOE TEST THIS
+   /***
+    * 
+    * @param buildingState
+    *           State of the building which allows us to find how large our
+    *           array will be
+    * @param priorityFloors
+    *           An array representing floors in the building filled with
+    *           priorities of said floors
+    * @return An array representing priority of floors filled with the floors
+    */
+   private int[] priorityFloors(int buildingState, int[] priorityFloors) {
+      int floorSchedule[] = new int[getNumberOfActiveFloors(buildingState)];
+      for (int i = 0; i < floorSchedule.length; ++i) { // Populate the
+                                                       // priorities
+         int max = 0;
+         int index = -1;
+         for (int j = 0; j < priorityFloors.length; ++j) { // Find the largest
+                                                           // priority
+            if (max < priorityFloors[j]) {
+               max = priorityFloors[j];
+               index = j;
+            }
+         }
+         priorityFloors[index] = 0; // We do now want to find the same priority
+                                    // again so we remove it
+         floorSchedule[i] = index; // The current floor with largest priority
+      }
+      return floorSchedule;
+   }
+
    private int[] intelliScheduler(int buildingState) {
       int[] floorSchedule = null;
       // What information can we know? and how can we use it
@@ -313,8 +361,16 @@ public class ElevatorManager {
       return floorSchedule;
    }
 
+   // TODO JOE TEST THIS
+   /***
+    * 
+    * Primitive Schedule finds the highest probability floor based on this formula:
+    *    (Sum of all elevator distances to this floor) / number Of Available elevators
+    * @param buildingState
+    *             Whether elevators are going up or down
+    * @return An array containing the order in which we assign floors
+    */
    private int[] primitiveScheduler(int buildingState) {
-      int floorSchedule[] = new int[getNumberOfActiveFloors(buildingState)];
       int wantedElevators; // Gets the appropriate elevator state
       if (buildingState == Building.UP) {
          wantedElevators = Elevator.UP;
@@ -323,15 +379,20 @@ public class ElevatorManager {
       }
       // Gets the position of all the appropriate elevators
       int[] elevatorFloors = getElevatorFloors(wantedElevators);
+      // Create a new array of floors
+      int[] priorityFloors = new int[curBuildingState.length];
       for (int i = 0; i < curBuildingState.length; ++i) {
+         int sum = 0;
          if (curBuildingState[i][buildingState] > 0) {
-            int sum = 0;
+            // calculate the average distance of all elevators from this floor
             for (int j = 0; j < elevatorFloors.length; ++j) {
-
+               sum += Math.abs(i - elevatorFloors[j]);
             }
+            sum = sum / elevatorFloors.length;
          }
+         priorityFloors[i] = sum;
       }
-      return floorSchedule;
+      return priorityFloors(buildingState, priorityFloors);
    }
 
    private LinkedList<Elevator> generatePriorityFields(int direction, int floor) {
