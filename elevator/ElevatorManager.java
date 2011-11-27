@@ -90,7 +90,7 @@ public class ElevatorManager {
       if (dumbMode == true) {
          dumbManage();
       } else if (smartMode == true) {
-         smartElevator();
+         smartManage();
       }
    }
 
@@ -172,16 +172,18 @@ public class ElevatorManager {
    }
 
    /***
-    * Creates a copy of the building after manage has completed most of its function
+    * Creates a copy of the building after manage has completed most of its
+    * function
     */
    private void updateOldBuildingState() {
       for (int i = 0; i < building.numbElevators; ++i) {
          oldBuildingState[i][Building.UP] = building.getPeople(i, Building.UP);
-         oldBuildingState[i][Building.DOWN] = building.getPeople(i, Building.DOWN);
+         oldBuildingState[i][Building.DOWN] = building.getPeople(i,
+               Building.DOWN);
       }
-      
+
    }
-   
+
    /***
     * Runs all elevators a single unit time
     */
@@ -194,8 +196,6 @@ public class ElevatorManager {
       }
    }
 
-   
-   
    /***
     * The dumb elevator follows a very strict and poorly optimized: 1. The
     * elevator must go completely down or up before it picks up people 2. The
@@ -229,11 +229,7 @@ public class ElevatorManager {
                      // generate goals for elevator
                      if (people > 0 && !upRequestsServed[i]) {
                         upRequestsServed[i] = true;
-                        curElevator.setGoal(i); // TODO For the more
-                                                // intelligent
-                                                // elevator we will
-                                                // need a
-                                                // scheduler
+                        curElevator.setGoal(i); 
                      }
                   }
                }
@@ -266,11 +262,7 @@ public class ElevatorManager {
                      // generate goals for elevator
                      if (people > 0 && !downRequestsServed[i]) {
                         downRequestsServed[i] = true;
-                        curElevator.setGoal(i); // TODO For the more
-                                                // intelligent
-                                                // elevator we will
-                                                // need a
-                                                // scheduler
+                        curElevator.setGoal(i); 
                      }
                   }
                }
@@ -280,6 +272,31 @@ public class ElevatorManager {
       runAllElevators();
    }
 
+   private void smartManage() {
+      smartElevator();
+      for (int i = 0; i < elevators.length; ++i) {
+         int eFloor = elevators[i].getCurrentFloor();
+         if (eFloor == elevators[i].peekGoal()) {
+            // Someone may be entering
+            
+            if (elevators[i].getState() > 0) {
+               int peopleWaiting = building.getPeople(eFloor, Building.UP);
+               if (peopleWaiting > 0) {
+                  
+               }
+            } else if (elevators[i].getState() < 0) {
+               int peopleWaiting = building.getPeople(eFloor, Building.DOWN);
+               if (peopleWaiting > 0) {
+                  
+               }
+            }
+         }
+      }
+      runAllElevators();
+      // This must be done last so that we can get an accurate building state
+      updateOldBuildingState();
+   }
+
    // TODO Exponential recharge time for elevator chaining
    // It will need to poll the building to see which floor has the most people
    private void smartElevator() {
@@ -287,14 +304,19 @@ public class ElevatorManager {
          // Manager only does work for tasks that have not been computed and
          // assigned yet
          // calculate floor priority
-         int[] buildingOrder = intelliScheduler(Building.UP);
-      }
-      // TODO Update oldBuildingState
-      //Very last thing
-      updateOldBuildingState ();
-   }
+         int[] buildingOrderUp = intelliScheduler(Building.UP);
+         int[] buildingOrderDown = intelliScheduler(Building.DOWN);
+         for (int i = 0; i < buildingOrderUp.length; ++i) {
+            LinkedList<Elevator> availableElevators = generatePriorityFields(
+                  Elevator.UP, buildingOrderUp[i]);
 
-   
+         }
+         for (int i = 0; i < buildingOrderDown.length; ++i) {
+            LinkedList<Elevator> availableElevators = generatePriorityFields(
+                  Elevator.UP, buildingOrderUp[i]);
+         }
+      }
+   }
 
    // TODO JOE TEST THIS
    private boolean checkBuildingState() {
@@ -364,10 +386,12 @@ public class ElevatorManager {
    // TODO JOE TEST THIS
    /***
     * 
-    * Primitive Schedule finds the highest probability floor based on this formula:
-    *    (Sum of all elevator distances to this floor) / number Of Available elevators
+    * Primitive Schedule finds the highest probability floor based on this
+    * formula: (Sum of all elevator distances to this floor) / number Of
+    * Available elevators
+    * 
     * @param buildingState
-    *             Whether elevators are going up or down
+    *           Whether elevators are going up or down
     * @return An array containing the order in which we assign floors
     */
    private int[] primitiveScheduler(int buildingState) {
