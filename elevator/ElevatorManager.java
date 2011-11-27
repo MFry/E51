@@ -254,6 +254,42 @@ public class ElevatorManager {
 
     }
 
+    /**
+     * Test Case for priority fields
+     */
+    /*
+    public static void main (String[] args) {
+        // int maxCap, int start, int upperElevatorRange, int lowerElevatorRange, String mode
+        Elevator elevator = new Elevator(12, 4, 9, 0, "j");
+        elevator.changeState (elevator.DOWN);
+        elevator.setGoal (elevator.DOWN);
+        elevator.setCurCap (5);
+        Elevator elevator3 = new Elevator(12, 7, 9, 0, "j");
+        elevator3.changeState (elevator.DOWN);
+        Elevator elevator2 = new Elevator(12, 4, 9, 0, "j");
+        elevator.changeState (elevator.DOWN);
+        
+        Building building = new Building(10, 2);
+        
+        // (int id, int waitTime, Integer destFl, Integer direct){
+        Person person = new Person(0, 1, 1, -1);
+        building.insertInFloor (3, person);
+        
+        Elevator[] elevatorArray = new Elevator[3];
+        elevatorArray[0] = elevator;
+        elevatorArray[1] = elevator3;
+        elevatorArray[2] = elevator2;
+        System.out.println (elevator.getState ());
+        
+        ElevatorManager manager = new ElevatorManager(elevatorArray, building, "j");
+        LinkedList<Elevator> elevatorList = manager.generatePriorityFields (-1, 4);
+        
+        System.out.println (elevatorList.get (0).getCurrentFloor () + elevatorList.get(0).getState ());
+        System.out.println (elevatorList.get (1).getCurrentFloor ());
+        System.out.println (elevatorList.get (2).getCurrentFloor ());
+    }
+    */
+    
     private LinkedList<Elevator> generatePriorityFields (int direction,
             int floor) {
 
@@ -276,12 +312,20 @@ public class ElevatorManager {
         }
 
         // remove elevators moving in the opposite direction that are NOT empty
+        for (int i = 0; i < elevatorList.size(); i++) {
+            if (!elevatorList.get (i).isEmpty () && elevatorList.get (i).getState () != direction) {
+                elevatorList.remove (elevatorList.get (i));
+            }
+        }
+        /*
         for (Elevator elevator : elevatorList) {
             if (!elevator.isEmpty () && elevator.getState () != direction) {
                 elevatorList.remove (elevator);
             }
         }
+        */
 
+        /*
         // remove ones that are not within the desired proximity
         for (Elevator elevator : elevatorList) {
             if ( ( elevator.getCurrentFloor () > floor + priorityFieldDistance)
@@ -290,8 +334,9 @@ public class ElevatorManager {
                 elevatorList.remove (elevator);
             }
         }
+        */
         
-        atomicSort(elevatorList, floor);
+        elevatorList = atomicSort(elevatorList, floor);
 
         return elevatorList;
     }
@@ -309,7 +354,7 @@ public class ElevatorManager {
 
                 // Test if need a swap or not.
                 if (atomicCompare (localElevatorList.get (index),
-                        localElevatorList.get (index), proximityFloor) == 1) {
+                        localElevatorList.get (index+1), proximityFloor) == -1) {
                     // These three lines just swap the two elements:
                     Elevator temp = localElevatorList.get (index);
                     localElevatorList.set(index, localElevatorList.get(index+1));
@@ -326,18 +371,25 @@ public class ElevatorManager {
 
         // if the elevator 1 is further away from the target floor
         // if elevator 2 is closer
-        if (Math.abs ( ( elevator1.getCurrentFloor () - floor)) > Math
-                .abs ( ( elevator2.getCurrentFloor ()) - floor)) {
+        int elevator1Distance = Math.abs (elevator1.getCurrentFloor () - floor);
+        int elevator2Distance = Math.abs (elevator2.getCurrentFloor () - floor);
+        if ( elevator1Distance > elevator2Distance  ) {
             return -1; // elevator 2 is closer
-        } else if (Math.abs ( ( elevator1.getCurrentFloor () - floor)) < Math
-                .abs ( ( elevator2.getCurrentFloor ()) - floor)) {
+        } else if ( elevator1Distance < elevator2Distance ) {
             return 1; // elevator 1 is closer
         } else {
+            // check to see if any of the elevators are empty
+            if (elevator1.isEmpty ()) {
+                return 1;
+            }
+            if (elevator2.isEmpty ()) {
+                return -1;
+            }
             // check to see which has the most people
-            if (elevator1.getCurCap () > elevator2.getCurCap ()) {
-                return 1; // elevator 1 greater
-            } else if (elevator2.getCurCap () < elevator2.getCurCap ()) {
-                return -1; // elevator 2 greater
+            if (elevator1.getCurCap () < elevator2.getCurCap ()) {
+                return 1; // elevator 1 is more preferred
+            } else if (elevator2.getCurCap () > elevator2.getCurCap ()) {
+                return -1; // elevator 2 is more preferred
             } else {
                 return 0; // equal
             }

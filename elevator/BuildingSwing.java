@@ -20,6 +20,10 @@ public class BuildingSwing {
    /** GUI frame */
    JFrame frame;
    JLabel timeLabel;
+<<<<<<< HEAD
+=======
+   JLabel people;
+>>>>>>> 144cd6c4a086adc3608b63fadb0a71b23292f544
 
    /**
     * Creates a new GUI for the Building View
@@ -33,6 +37,10 @@ public class BuildingSwing {
       numElevators = elevators;
       elevator = new ElevatorSlider[numElevators];
       timeLabel = new JLabel ();
+<<<<<<< HEAD
+=======
+      people = new JLabel ();
+>>>>>>> 144cd6c4a086adc3608b63fadb0a71b23292f544
    }
 
    /**
@@ -52,10 +60,15 @@ public class BuildingSwing {
          elevator[i] = new ElevatorSlider (inputElevators[i], i + 1);
          frame.add (elevator[i]);
       }
+      frame.add (people);
       frame.setLayout (new FlowLayout ());
       frame.setVisible (true);
       frame.setBackground (Color.white);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 144cd6c4a086adc3608b63fadb0a71b23292f544
    }
 
    /**
@@ -63,9 +76,16 @@ public class BuildingSwing {
     * @param rate The number of milliseconds between "frames"
     * @throws InterruptedException 
     */
+<<<<<<< HEAD
    public void update (int rate, Elevator[] elevators, int time)
    throws InterruptedException {
       updateTime (time);
+=======
+   public void update (int rate, Elevator[] elevators, int time, Building b)
+   throws InterruptedException {
+      updateTime (time);
+      updatePeople (b);
+>>>>>>> 144cd6c4a086adc3608b63fadb0a71b23292f544
       // Get the state of each individual elevator and then update
       for (int i = 0; i < numElevators; i++) {
          // Update the value
@@ -78,5 +98,21 @@ public class BuildingSwing {
    public void updateTime (int time) {
       String n = "Time: " + time;
       timeLabel.setText (n);
+<<<<<<< HEAD
+=======
+   }
+
+   public void updatePeople (Building b) {
+      String n = "<html>";
+      for (int i = numFloors - 1; i >= 0; i--) {
+         int sum = 0;
+         for (int j = 0; j < 2; j++) {
+            sum += b.getPeople (i, j);
+         }
+         n += sum + "<br>";
+      }
+      n += "</html>";
+      people.setText (n);
+>>>>>>> 144cd6c4a086adc3608b63fadb0a71b23292f544
    }
 }
