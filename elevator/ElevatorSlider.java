@@ -25,7 +25,7 @@ public class ElevatorSlider extends JPanel {
    private static final int HEIGHT_PER_FLOOR = 10;
 
    /** Width that each slider takes up */
-   private static final int SLIDER_WIDTH = 120;
+   private static final int SLIDER_WIDTH = 150;
 
    /** Slider to represent the elevator's position */
    JSlider slider;

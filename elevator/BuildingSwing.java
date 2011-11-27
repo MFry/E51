@@ -20,6 +20,7 @@ public class BuildingSwing {
    /** GUI frame */
    JFrame frame;
    JLabel timeLabel;
+   JLabel people;
 
    /**
     * Creates a new GUI for the Building View
@@ -33,6 +34,7 @@ public class BuildingSwing {
       numElevators = elevators;
       elevator = new ElevatorSlider[numElevators];
       timeLabel = new JLabel ();
+      people = new JLabel ();
    }
 
    /**
@@ -52,10 +54,11 @@ public class BuildingSwing {
          elevator[i] = new ElevatorSlider (inputElevators[i], i + 1);
          frame.add (elevator[i]);
       }
+      frame.add (people);
       frame.setLayout (new FlowLayout ());
       frame.setVisible (true);
       frame.setBackground (Color.white);
-      
+
    }
 
    /**
@@ -63,9 +66,10 @@ public class BuildingSwing {
     * @param rate The number of milliseconds between "frames"
     * @throws InterruptedException 
     */
-   public void update (int rate, Elevator[] elevators, int time)
+   public void update (int rate, Elevator[] elevators, int time, Building b)
    throws InterruptedException {
       updateTime (time);
+      updatePeople (b);
       // Get the state of each individual elevator and then update
       for (int i = 0; i < numElevators; i++) {
          // Update the value
@@ -78,5 +82,18 @@ public class BuildingSwing {
    public void updateTime (int time) {
       String n = "Time: " + time;
       timeLabel.setText (n);
+   }
+
+   public void updatePeople (Building b) {
+      String n = "<html>";
+      for (int i = numFloors - 1; i >= 0; i--) {
+         int sum = 0;
+         for (int j = 0; j < 2; j++) {
+            sum += b.getPeople (i, j);
+         }
+         n += sum + "<br>";
+      }
+      n += "</html>";
+      people.setText (n);
    }
 }
