@@ -432,6 +432,28 @@ public class ElevatorManager {
         return priorityFloors (buildingState, priorityFloors);
     }
 
+    public static void main (String[] args) {
+        // int maxCap, int start, int upperElevatorRange, int lowerElevatorRange, String mode
+        Elevator elevator = new Elevator(12, 12, 20, 0, "s");
+        elevator.changeState (elevator.UP);
+        Elevator elevator2 = new Elevator(12, 1, 20, 0, "s");
+        elevator2.changeState (elevator.UP);
+        
+        Elevator[] elevatorArray = new Elevator[2];
+        elevatorArray[0] = elevator2;
+        elevatorArray[1] = elevator;
+        
+        Building building = new Building(20, 2);
+        
+        Person person = new Person(0, 0, 3, -1);
+        building.insertInFloor (6, person);
+        
+        ElevatorManager manager = new ElevatorManager(elevatorArray, building, "s");
+        LinkedList<Elevator> elevatorList = manager.generatePriorityFields (-1, 7);
+        
+        System.out.println (elevatorList.get(0).getCurrentFloor ());
+    }
+    
     private LinkedList<Elevator> generatePriorityFields (int direction,
             int floor) {
 
@@ -463,7 +485,7 @@ public class ElevatorManager {
 
         for (int i = 0; i < elevatorList.size(); i++) {
             int elevatorFloor = elevatorList.get(i).getCurrentFloor ();
-            int k = floor - elevatorFloor;
+            int k = elevatorFloor - floor;
             
             if ( Math.abs (k) <= priorityFieldDistance) {
                 // we keep the elevator
