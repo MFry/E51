@@ -17,10 +17,11 @@ public class ElevatorManager {
      * hits the top floor
      */
     private boolean dumbMode;
-
+    private boolean knownFloorPeople;
+    
     private static final int DOWN = 0;
     private static final int UP = 1;
-
+    private int[][] curBuildingState;
     // TODO: Be able to output the proper statistics
     /***
      * Given the elevator and building the elevator will manage the elevators in
@@ -228,12 +229,13 @@ public class ElevatorManager {
     // It will need to poll the building to see which floor has the most people
     private void smartElevator () {
         if (checkBuildingState ()) {
-
+           
         }
     }
 
     private boolean checkBuildingState () {
-        boolean changeOccured = false; // Assume no chage
+        boolean changeOccured = false; // Assume no change
+        curBuildingState = new int[oldBuildingState.length][2];
         for (int i = 0; i < building.numbFloors; ++i) {
             // Check the current building state by comparing new state to old
             // state
@@ -242,10 +244,10 @@ public class ElevatorManager {
             int downState = building.getPeople (i, Building.DOWN)
                     - oldBuildingState[i][ElevatorManager.DOWN];
             if (upState > 0 || downState > 0) {
-                changeOccured = true; // change occured
+                changeOccured = true; // change occurred
             }
-            oldBuildingState[i][ElevatorManager.UP] = upState;
-            oldBuildingState[i][ElevatorManager.DOWN] = downState;
+            curBuildingState[i][ElevatorManager.UP] = upState;
+            curBuildingState[i][ElevatorManager.DOWN] = downState;
         }
         return changeOccured;
     }
