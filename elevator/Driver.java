@@ -35,7 +35,7 @@ public class Driver {
         gui.init (elevators);
         // Read file line by line
         try {
-            FileInputStream fstream = new FileInputStream ("rawOutput1.txt");
+            FileInputStream fstream = new FileInputStream ("rawOutput.txt");
             DataInputStream in = new DataInputStream (fstream);
             BufferedReader br = new BufferedReader (new InputStreamReader (in));
             String strLine;
@@ -55,7 +55,7 @@ public class Driver {
                     while (building.moreCallsToBeServed ()
                             || elevators[0].getCurCap () > 0) {
                         manager.manage ();
-                        gui.update (0, elevators);
+                        gui.update (10, elevators);
                     }
                     break;
                 }
@@ -73,7 +73,7 @@ public class Driver {
                     difference = time - currentTime;
                     for (int i = 0; i < difference; i++) {
                         manager.manage ();
-                        gui.update (0, elevators);
+                        gui.update (10, elevators);
                         for (int j = 0; j < elevators.length; j++) {
                             if ( ( elevators[j].getCurrentFloor () > building.numbFloors)
                                     || ( elevators[j].getCurCap () < 0)) {
