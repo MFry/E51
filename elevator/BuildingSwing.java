@@ -27,6 +27,7 @@ public class BuildingSwing {
     * @param system Control system for the elevator
     */
    public BuildingSwing (int floors, int elevators) {
+      // Store the 
       numFloors = floors;
       numElevators = elevators;
       elevator = new ElevatorSlider[numElevators];
@@ -65,7 +66,7 @@ public class BuildingSwing {
       // Get the state of each individual elevator and then update
       for (int i = 0; i < numElevators; i++) {
          // Update the value
-         elevator[i].update (elevators[i], i);
+         elevator[i].update (elevators[i], i + 1);
       }
       Thread.sleep (rate);
    }
