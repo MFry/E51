@@ -293,23 +293,28 @@ public class ElevatorManager {
       smartElevator();
       for (int i = 0; i < elevators.length; ++i) {
          int eFloor = elevators[i].getCurrentFloor();
-         if (eFloor == elevators[i].peekGoal()) {
-            // Someone may be entering
+         Integer goal = elevators[i].peekGoal();
+         if (goal != null) {
+            if (eFloor == elevators[i].peekGoal()) {
+               // Someone may be entering
 
-            if (elevators[i].getState() > 0) {
-               int peopleWaiting = building.getPeople(eFloor, Building.UP);
-               if (peopleWaiting > 0) {
-                  while (peopleWaiting > 0) {
-                     elevators[i].enter(building.remove(eFloor, Building.UP));
-                     --peopleWaiting;
+               if (elevators[i].getState() > 0) {
+                  int peopleWaiting = building.getPeople(eFloor, Building.UP);
+                  if (peopleWaiting > 0) {
+                     while (peopleWaiting > 0) {
+                        elevators[i]
+                              .enter(building.remove(eFloor, Building.UP));
+                        --peopleWaiting;
+                     }
                   }
-               }
-            } else if (elevators[i].getState() < 0) {
-               int peopleWaiting = building.getPeople(eFloor, Building.DOWN);
-               if (peopleWaiting > 0) {
-                  while (peopleWaiting > 0) {
-                     elevators[i].enter(building.remove(eFloor, Building.DOWN));
-                     --peopleWaiting;
+               } else if (elevators[i].getState() < 0) {
+                  int peopleWaiting = building.getPeople(eFloor, Building.DOWN);
+                  if (peopleWaiting > 0) {
+                     while (peopleWaiting > 0) {
+                        elevators[i].enter(building.remove(eFloor,
+                              Building.DOWN));
+                        --peopleWaiting;
+                     }
                   }
                }
             }
@@ -336,6 +341,7 @@ public class ElevatorManager {
 
                } else {
                   // TODO We will need ensure that we don't ignore people
+                  availableElevators.remove();
                }
             }
          }

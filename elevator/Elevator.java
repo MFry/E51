@@ -124,7 +124,7 @@ public class Elevator implements Comparable<Elevator> {
       goals.add(toDo);
    }
 
-   public int peekGoal () {
+   public Integer peekGoal () {
       return goals.peek();
    }
    
@@ -249,7 +249,7 @@ public class Elevator implements Comparable<Elevator> {
                }
                localGoal = goals.peek();
             }
-            LinkedList<Person> peopleLeaving = contains.remove(destination); // TODO
+            LinkedList<Person> peopleLeaving = contains.get(destination); // TODO
                                                                           // change
                                                                           // name
                                                                           // of
