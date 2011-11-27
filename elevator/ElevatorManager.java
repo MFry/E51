@@ -18,12 +18,12 @@ public class ElevatorManager {
     */
    private boolean dumbMode; // set with a d
    private boolean smartMode; // set with a s
-   
+
    // Different Modes for the smart elevator
    // NOTE knownDestinations overwrites known people per floor
    private boolean knownPeoplePerFloor; // set with a t
    private boolean knownDestinations; // set with a g
-   
+
    private static final int DOWN = 0;
    private static final int UP = 1;
    private int[][] curBuildingState;
@@ -165,7 +165,7 @@ public class ElevatorManager {
             index++;
          }
       }
-      
+
       if (elevatorFloors.length > 0) {
          return elevatorFloors;
       } else {
@@ -328,15 +328,28 @@ public class ElevatorManager {
          // assigned yet
          // calculate floor priority
          int[] buildingOrderUp = intelliScheduler(Building.UP);
-         int[] buildingOrderDown = intelliScheduler(Building.DOWN);
-         for (int i = 0; i < buildingOrderUp.length; ++i) {
-            LinkedList<Elevator> availableElevators = generatePriorityFields(
-                  Elevator.UP, buildingOrderUp[i]);
+         if (buildingOrderUp != null) {
+            for (int i = 0; i < buildingOrderUp.length; ++i) {
+               LinkedList<Elevator> availableElevators = generatePriorityFields(
+                     Elevator.UP, buildingOrderUp[i]);
+               if (knownDestinations || knownPeoplePerFloor) {
 
+               } else {
+                  // TODO We will need ensure that we don't ignore people
+               }
+            }
          }
-         for (int i = 0; i < buildingOrderDown.length; ++i) {
-            LinkedList<Elevator> availableElevators = generatePriorityFields(
-                  Elevator.UP, buildingOrderUp[i]);
+         int[] buildingOrderDown = intelliScheduler(Building.DOWN);
+         if (buildingOrderDown != null) {
+            for (int i = 0; i < buildingOrderDown.length; ++i) {
+               LinkedList<Elevator> availableElevators = generatePriorityFields(
+                     Elevator.UP, buildingOrderUp[i]);
+               if (knownDestinations || knownPeoplePerFloor) {
+
+               } else {
+                  // TODO We will need ensure that we don't ignore people
+               }
+            }
          }
       }
    }
@@ -417,7 +430,7 @@ public class ElevatorManager {
     *           Whether elevators are going up or down
     * @return An array containing the order in which we assign floors
     */
-   private int[] primitiveScheduler (int buildingState) {
+   private int[] primitiveScheduler(int buildingState) {
       int wantedElevators; // Gets the appropriate elevator state
       if (buildingState == Building.UP) {
          wantedElevators = Elevator.UP;
@@ -426,6 +439,9 @@ public class ElevatorManager {
       }
       // Gets the position of all the appropriate elevators
       int[] elevatorFloors = getElevatorFloors(wantedElevators);
+      if (elevatorFloors == null) {
+         return null; // No elevators were found
+      }
       // Create a new array of floors
       int[] priorityFloors = new int[curBuildingState.length];
       for (int i = 0; i < curBuildingState.length; ++i) {
@@ -441,30 +457,20 @@ public class ElevatorManager {
       }
       return priorityFloors(buildingState, priorityFloors);
    }
-/*
-   private int[] intermediateScheduler (int buildingState) {
-      int wantedElevators; // Gets the appropriate elevator state
-      if (buildingState == Building.UP) {
-         wantedElevators = Elevator.UP;
-      } else {
-         wantedElevators = Elevator.DOWN;
-      }
-      // Gets the position of all the appropriate elevators
-      int[] priorityFloors = new int[curBuildingState.length];
-      for (int i = 0; i < curBuildingState.length; ++i) {
-         int sum = 0;
-         if (curBuildingState[i][buildingState] > 0) {
-            // calculate the average distance of all elevators from this floor
-            for (int j = 0; j < elevatorFloors.length; ++j) {
-               sum += Math.abs(i - elevatorFloors[j]);
-            }
-            sum = sum / elevatorFloors.length;
-         }
-         priorityFloors[i] = sum;
-      }
-      return priorityFloors(buildingState, priorityFloors);
-   }
-   */
+
+   /*
+    * private int[] intermediateScheduler (int buildingState) { int
+    * wantedElevators; // Gets the appropriate elevator state if (buildingState
+    * == Building.UP) { wantedElevators = Elevator.UP; } else { wantedElevators
+    * = Elevator.DOWN; } // Gets the position of all the appropriate elevators
+    * int[] priorityFloors = new int[curBuildingState.length]; for (int i = 0; i
+    * < curBuildingState.length; ++i) { int sum = 0; if
+    * (curBuildingState[i][buildingState] > 0) { // calculate the average
+    * distance of all elevators from this floor for (int j = 0; j <
+    * elevatorFloors.length; ++j) { sum += Math.abs(i - elevatorFloors[j]); }
+    * sum = sum / elevatorFloors.length; } priorityFloors[i] = sum; } return
+    * priorityFloors(buildingState, priorityFloors); }
+    */
    private LinkedList<Elevator> generatePriorityFields(int direction, int floor) {
 
       // create LinkList that will hold all the elevators in the building
