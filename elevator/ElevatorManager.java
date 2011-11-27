@@ -157,14 +157,22 @@ public class ElevatorManager {
          }
       }
       int elevatorFloors[] = new int[totalElevators];
+      int index = 0;
       for (int i = 0; i < elevators.length; ++i) {
          if (elevators[i].getState() == state
                || elevators[i].getState() == Elevator.STATIC) {
-            elevatorFloors[i] = elevators[i].getCurrentFloor();
+            elevatorFloors[index] = elevators[i].getCurrentFloor();
+            index++
          }
       }
-      System.err.println("Error has occurred: No elevator found");
-      return null;
+      
+      if (elevatorFloors.length > 0) {
+         return elevatorFloors;
+      } else {
+         System.err.println("Error has occurred: No elevator found");
+         return null;
+      }
+      
    }
 
    // TODO JOE TEST THIS
