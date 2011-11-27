@@ -25,17 +25,10 @@ public class Driver {
          * building, or get the person ready in the queue towards its direction.
          * Manager will start moving when there is a change in time.
          */
-        Building building = new Building (10, 3);
-        Elevator[] elevators = new Elevator[building.getNumElevators ()];
-        for (int i = 0; i < elevators.length; i++) {
-            elevators[i] = new Elevator (10, 0, 9, 0, "d");
-        }
-        ElevatorManager manager = new ElevatorManager (elevators, building, "d");
-        BuildingSwing gui = new BuildingSwing (10, 3);
-        gui.init (elevators);
+
         // Read file line by line
         try {
-            FileInputStream fstream = new FileInputStream ("rawOutput1.txt");
+            FileInputStream fstream = new FileInputStream ("brutalTest.txt");
             DataInputStream in = new DataInputStream (fstream);
             BufferedReader br = new BufferedReader (new InputStreamReader (in));
             String strLine;
@@ -48,6 +41,16 @@ public class Driver {
             int direction;
             int currentLine = 0;
             int difference = 0;
+            strLine = br.readLine ();
+            int numFloors = Integer.parseInt (strLine);
+            Building building = new Building (numFloors, 3);
+            Elevator[] elevators = new Elevator[building.getNumElevators ()];
+            for (int i = 0; i < elevators.length; i++) {
+                elevators[i] = new Elevator (10, 0, 9, 0, "d");
+            }
+            ElevatorManager manager = new ElevatorManager (elevators, building, "d");
+            BuildingSwing gui = new BuildingSwing (numFloors, 3);
+            gui.init (elevators);
             while (true) {
                 // Manage for every single time
                 strLine = br.readLine ();
@@ -55,7 +58,7 @@ public class Driver {
                     while (building.moreCallsToBeServed ()
                             || elevators[0].getCurCap () > 0) {
                         manager.manage ();
-                        gui.update (0, elevators);
+                        gui.update (10, elevators);
                     }
                     break;
                 }
@@ -73,7 +76,7 @@ public class Driver {
                     difference = time - currentTime;
                     for (int i = 0; i < difference; i++) {
                         manager.manage ();
-                        gui.update (0, elevators);
+                        gui.update (10, elevators);
                         for (int j = 0; j < elevators.length; j++) {
                             if ( ( elevators[j].getCurrentFloor () > building.numbFloors)
                                     || ( elevators[j].getCurCap () < 0)) {

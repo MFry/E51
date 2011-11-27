@@ -245,7 +245,7 @@ public class Elevator implements Comparable<Elevator> {
                }
                localGoal = goals.peek();
             }
-            LinkedList<Person> peopleLeaving = contains.get(destination); // TODO
+            LinkedList<Person> peopleLeaving = contains.remove(destination); // TODO
                                                                           // change
                                                                           // name
                                                                           // of
