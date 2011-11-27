@@ -16,11 +16,14 @@ public class ElevatorManager {
     * Mode available: d - Dumb mode (An elevator cannot switch states until it
     * hits the top floor
     */
-   private boolean dumbMode;
-   private boolean smartMode;
-   // Different scalling Modes for the smart elevator
-   private boolean knownPeoplePerFloor; // TODO Implement this
-   private boolean knownDestinations; // TODO Implement this
+   private boolean dumbMode; // set with a d
+   private boolean smartMode; // set with a s
+   
+   // Different Modes for the smart elevator
+   // NOTE knownDestinations overwrites known people per floor
+   private boolean knownPeoplePerFloor; // set with a t
+   private boolean knownDestinations; // set with a g
+   
    private static final int DOWN = 0;
    private static final int UP = 1;
    private int[][] curBuildingState;
@@ -50,7 +53,7 @@ public class ElevatorManager {
       oldBuildingState = new int[b.numbFloors][2]; // Its 2 instead of 3
                                                    // because we do not care
                                                    // about people that do not
-                                                   // want to move
+                                                   // want to use the elevator
       init(); // TODO recode this
    }
 
@@ -64,6 +67,7 @@ public class ElevatorManager {
       }
    }
 
+   // TODO JOE TEST THIS
    private void setMode(String mode) {
       /***
        * Extracts the string for valid modes
@@ -78,6 +82,12 @@ public class ElevatorManager {
          }
          if (smartMode) {
             // TODO Implement expandable options
+            if ('t' == mode.charAt(i)) {
+               knownPeoplePerFloor = true;
+            }
+            if ('g' == mode.charAt(i)) {
+               knownDestinations = true;
+            }
          }
       }
    }
@@ -229,7 +239,7 @@ public class ElevatorManager {
                      // generate goals for elevator
                      if (people > 0 && !upRequestsServed[i]) {
                         upRequestsServed[i] = true;
-                        curElevator.setGoal(i); 
+                        curElevator.setGoal(i);
                      }
                   }
                }
@@ -262,7 +272,7 @@ public class ElevatorManager {
                      // generate goals for elevator
                      if (people > 0 && !downRequestsServed[i]) {
                         downRequestsServed[i] = true;
-                        curElevator.setGoal(i); 
+                        curElevator.setGoal(i);
                      }
                   }
                }
@@ -278,7 +288,7 @@ public class ElevatorManager {
          int eFloor = elevators[i].getCurrentFloor();
          if (eFloor == elevators[i].peekGoal()) {
             // Someone may be entering
-            
+
             if (elevators[i].getState() > 0) {
                int peopleWaiting = building.getPeople(eFloor, Building.UP);
                if (peopleWaiting > 0) {
@@ -400,7 +410,7 @@ public class ElevatorManager {
     *           Whether elevators are going up or down
     * @return An array containing the order in which we assign floors
     */
-   private int[] primitiveScheduler(int buildingState) {
+   private int[] primitiveScheduler (int buildingState) {
       int wantedElevators; // Gets the appropriate elevator state
       if (buildingState == Building.UP) {
          wantedElevators = Elevator.UP;
@@ -424,7 +434,30 @@ public class ElevatorManager {
       }
       return priorityFloors(buildingState, priorityFloors);
    }
-
+/*
+   private int[] intermediateScheduler (int buildingState) {
+      int wantedElevators; // Gets the appropriate elevator state
+      if (buildingState == Building.UP) {
+         wantedElevators = Elevator.UP;
+      } else {
+         wantedElevators = Elevator.DOWN;
+      }
+      // Gets the position of all the appropriate elevators
+      int[] priorityFloors = new int[curBuildingState.length];
+      for (int i = 0; i < curBuildingState.length; ++i) {
+         int sum = 0;
+         if (curBuildingState[i][buildingState] > 0) {
+            // calculate the average distance of all elevators from this floor
+            for (int j = 0; j < elevatorFloors.length; ++j) {
+               sum += Math.abs(i - elevatorFloors[j]);
+            }
+            sum = sum / elevatorFloors.length;
+         }
+         priorityFloors[i] = sum;
+      }
+      return priorityFloors(buildingState, priorityFloors);
+   }
+   */
    private LinkedList<Elevator> generatePriorityFields(int direction, int floor) {
 
       // create LinkList that will hold all the elevators in the building
