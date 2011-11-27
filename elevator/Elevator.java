@@ -124,6 +124,10 @@ public class Elevator implements Comparable<Elevator> {
       goals.add(toDo);
    }
 
+    public int peekGoal () {
+      return goals.peek();
+   }
+
    /*** @Returns the total distance the elevator has traveled */
    public int getDistance() {
       return distanceTrav;
