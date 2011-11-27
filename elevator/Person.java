@@ -3,6 +3,7 @@ public class Person {
 
     private int ID;
     private int waitingTime;
+    private int removeTime;
     private int destinationFloor;
     private int direction;
     public static int UP = 1;
@@ -15,9 +16,10 @@ public class Person {
      * @param destFl
      * @param direct
      */
-    public Person(int id, int waitTime, Integer destFl, Integer direct){
+    public Person(int id, int waitTime, int removeTime, Integer destFl, Integer direct){
         setID (id);
         setWaitingTime (waitTime);
+        setRemoveTime (removeTime);
         setDestinationFloor (destFl);
         setDirection (direct);
     }
@@ -53,5 +55,14 @@ public class Person {
     public void setDestinationFloor (int destinationFloor) {
         this.destinationFloor = destinationFloor;
     }
+
+    public int getRemoveTime () {
+        return removeTime;
+    }
+
+    public void setRemoveTime (int removeTime) {
+        this.removeTime = removeTime;
+    }
+
     
 }
