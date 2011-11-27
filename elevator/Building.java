@@ -8,12 +8,13 @@ public class Building {
    // [Building Floors][People Going Up/Down/Staying] containing linked lists of
    // people
    ArrayList<Person> floors[][];
-
+   LinkedList<Integer> times;
    int numbFloors;
    int numbElevators;
    public static final int UP = 0;
    public static final int DOWN = 1;
    public static final int STATIC = 2;
+   int currentTime = 0;
 
    @SuppressWarnings("unchecked")
    public Building(int numFloors, int numElevators) {
@@ -25,7 +26,7 @@ public class Building {
          floors[i][1] = new ArrayList<Person>();
          floors[i][2] = new ArrayList<Person>();
       }
-
+      times = new LinkedList<Integer>();
       // 0 is array list of people going down
       // 1 is array list of people going up
       // 2 is array list of people staying in the floor
@@ -81,7 +82,6 @@ public class Building {
    public Person removeFromFloor(int currentFloor, int state,
          Integer destination) {
       // find person in that floor.
-      // Person removed = new Person()
       return floors[currentFloor][state].remove(0);
    }
 
@@ -102,6 +102,8 @@ public class Building {
    public Person remove(int floor, int direction) {
       Person test;
       test = floors[floor][direction].remove(0);
+      test.setRemoveTime (currentTime - test.getWaitingTime ());
+      times.add (test.getRemoveTime ());
       return test;
    }
 
