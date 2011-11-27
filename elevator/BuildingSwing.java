@@ -2,12 +2,12 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 /**
  * Creates a GUI that simulates the elevators in an entire building
  * with a certain number of floors and elevators
  * @author Kim
- *
  */
 public class BuildingSwing {
 
@@ -19,6 +19,7 @@ public class BuildingSwing {
    ElevatorSlider[] elevator;
    /** GUI frame */
    JFrame frame;
+   JLabel timeLabel;
 
    /**
     * Creates a new GUI for the Building View
@@ -27,9 +28,11 @@ public class BuildingSwing {
     * @param system Control system for the elevator
     */
    public BuildingSwing (int floors, int elevators) {
+      // Store the 
       numFloors = floors;
       numElevators = elevators;
       elevator = new ElevatorSlider[numElevators];
+      timeLabel = new JLabel ();
    }
 
    /**
@@ -43,7 +46,7 @@ public class BuildingSwing {
       frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
       System.out.println ("Setting frame size");
       frame.setSize (500, 500);
-
+      frame.add (timeLabel);
       // Generate the elevators
       for (int i = 0; i < numElevators; i++) {
          elevator[i] = new ElevatorSlider (inputElevators[i], i + 1);
@@ -52,7 +55,7 @@ public class BuildingSwing {
       frame.setLayout (new FlowLayout ());
       frame.setVisible (true);
       frame.setBackground (Color.white);
-      frame.pack ();
+      
    }
 
    /**
@@ -60,13 +63,20 @@ public class BuildingSwing {
     * @param rate The number of milliseconds between "frames"
     * @throws InterruptedException 
     */
-   public void update (int rate, Elevator[] elevators)
+   public void update (int rate, Elevator[] elevators, int time)
    throws InterruptedException {
+      updateTime (time);
       // Get the state of each individual elevator and then update
       for (int i = 0; i < numElevators; i++) {
          // Update the value
-         elevator[i].update (elevators[i], i);
+         elevator[i].update (elevators[i], i + 1);
       }
       Thread.sleep (rate);
+      frame.pack ();
+   }
+
+   public void updateTime (int time) {
+      String n = "Time: " + time;
+      timeLabel.setText (n);
    }
 }
