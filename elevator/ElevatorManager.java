@@ -127,6 +127,7 @@ public class ElevatorManager {
       }
    }
 
+   // TODO JOE TEST THIS
    /***
     * Finds the floor of every elevator going in the desired location
     * 
@@ -145,21 +146,15 @@ public class ElevatorManager {
             ++totalElevators;
          }
       }
-      int index = 0;
       int elevatorFloors[] = new int[totalElevators];
       for (int i = 0; i < elevators.length; ++i) {
          if (elevators[i].getState() == state
                || elevators[i].getState() == Elevator.STATIC) {
-            elevatorFloors[index] = elevators[i].getCurrentFloor();
-            index++;
+            elevatorFloors[i] = elevators[i].getCurrentFloor();
          }
       }
-      if (elevatorFloors.length > 0) {
-          return elevatorFloors;
-      } else {
-          System.err.println("Error has occurred: No elevator found");
-          return null;
-      }
+      System.err.println("Error has occurred: No elevator found");
+      return null;
    }
 
    // TODO JOE TEST THIS
@@ -287,12 +282,18 @@ public class ElevatorManager {
             if (elevators[i].getState() > 0) {
                int peopleWaiting = building.getPeople(eFloor, Building.UP);
                if (peopleWaiting > 0) {
-                  
+                  while (peopleWaiting > 0) {
+                     elevators[i].enter(building.remove(eFloor, Building.UP));
+                     --peopleWaiting;
+                  }
                }
             } else if (elevators[i].getState() < 0) {
                int peopleWaiting = building.getPeople(eFloor, Building.DOWN);
                if (peopleWaiting > 0) {
-                  
+                  while (peopleWaiting > 0) {
+                     elevators[i].enter(building.remove(eFloor, Building.DOWN));
+                     --peopleWaiting;
+                  }
                }
             }
          }
@@ -373,23 +374,6 @@ public class ElevatorManager {
       }
       return floorSchedule;
    }
-   
-   public static void main(String[] args) {
-       //int maxCap, int start, int upperElevatorRange, int lowerElevatorRange, String mode
-       Elevator elevator1 = new Elevator(12, 5, 9, 0, "s");
-       Elevator elevator2 = new Elevator(12, 7, 9, 0, "s");
-       Elevator elevator3 = new Elevator(12, 3, 9, 0, "s");
-       
-       Elevator[] elevatorArray = new Elevator[3];
-       elevatorArray[0] = elevator1;
-       elevatorArray[1] = elevator2;
-       elevatorArray[2] = elevator3;
-       
-       Building building = new Building(10, 3);
-       
-       ElevatorManager elevatorManager = new ElevatorManager(elevatorArray, building, "s");
-       //elevatorManager.priorityFloors (buildingState, priorityFloors);
-   }
 
    private int[] intelliScheduler(int buildingState) {
       int[] floorSchedule = null;
@@ -468,6 +452,18 @@ public class ElevatorManager {
             elevatorList.remove(elevatorList.get(i));
          }
       }
+      /*
+       * for (Elevator elevator : elevatorList) { if (!elevator.isEmpty () &&
+       * elevator.getState () != direction) { elevatorList.remove (elevator); }
+       * }
+       */
+
+      /*
+       * // remove ones that are not within the desired proximity for (Elevator
+       * elevator : elevatorList) { if ( ( elevator.getCurrentFloor () > floor +
+       * priorityFieldDistance) || ( elevator.getCurrentFloor () < floor -
+       * priorityFieldDistance)) { elevatorList.remove (elevator); } }
+       */
 
       elevatorList = atomicSort(elevatorList, floor);
 
@@ -495,6 +491,7 @@ public class ElevatorManager {
             }
          }
       }
+
       return localElevatorList;
    }
 
