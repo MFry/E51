@@ -108,5 +108,14 @@ public class Building {
    public int getNumElevators() {
       return numbElevators;
    }
+   
+   public boolean moreCallsToBeServed(){
+       for(int i = 0; i < floors.length; i++){
+           if(((floors[i][UP].size () > 0) || (floors[i][DOWN].size () > 0))){
+               return true;
+           }
+       }
+       return false;
+   }
 
 }
