@@ -162,7 +162,7 @@ public class ElevatorManager {
          if (elevators[i].getState() == state
                || elevators[i].getState() == Elevator.STATIC) {
             elevatorFloors[index] = elevators[i].getCurrentFloor();
-            index++
+            index++;
          }
       }
       
@@ -172,7 +172,6 @@ public class ElevatorManager {
          System.err.println("Error has occurred: No elevator found");
          return null;
       }
-      
    }
 
    // TODO JOE TEST THIS
