@@ -26,9 +26,6 @@ public class Elevator implements Comparable<Elevator> {
 
    private static final char dMode = 'd';
 
-   // TODO Update the elevator software so that it automatically switches states
-   // if it hits maxFloor
-
    /***
     * The constructor for an elevator, with an initial starting floor and
     * maximum capacity
