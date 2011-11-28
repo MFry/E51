@@ -24,8 +24,8 @@ public class ElevatorManager {
    private boolean knownPeoplePerFloor; // set with a t
    private boolean knownDestinations; // set with a g
 
-   private static final int DOWN = 0;
-   private static final int UP = 1;
+   private static final int DOWN = 1;
+   private static final int UP = 0;
    private int[][] curBuildingState;
 
    // TODO: Be able to output the proper statistics
@@ -54,7 +54,7 @@ public class ElevatorManager {
                                                    // because we do not care
                                                    // about people that do not
                                                    // want to use the elevator
-      init(); // TODO recode this
+      //init(); // TODO recode this
    }
 
    private void init() {
@@ -169,7 +169,7 @@ public class ElevatorManager {
       if (elevatorFloors.length > 0) {
          return elevatorFloors;
       } else {
-         System.err.println("Error has occurred: No elevator found");
+         System.err.println("No elevators needed.");
          return null;
       }
    }
@@ -193,7 +193,7 @@ public class ElevatorManager {
     * function
     */
    private void updateOldBuildingState(int[][] moreGoals) {
-      for (int i = 0; i < building.numbElevators; ++i) {
+      for (int i = 0; i < building.floors.length; ++i) {
          oldBuildingState[i][Building.UP] = building.getPeople(i, Building.UP)
                - moreGoals[i][Building.UP];
          oldBuildingState[i][Building.DOWN] = building.getPeople(i,
@@ -394,6 +394,11 @@ public class ElevatorManager {
          if (upState > 0 || downState > 0) {
             changeOccured = true; // change occurred
          }
+         
+         if(upState < 0 || downState < 0){
+             System.err.println ("The state went negative.");
+             System.err.println (building.currentTime);
+         }
          curBuildingState[i][ElevatorManager.UP] = upState;
          curBuildingState[i][ElevatorManager.DOWN] = downState;
       }
@@ -441,7 +446,7 @@ public class ElevatorManager {
       } else {
          floorSchedule = primitiveScheduler(buildingState);
       }
-      assert floorSchedule != null;
+      assert (floorSchedule != null);
       return floorSchedule;
    }
 
@@ -544,32 +549,6 @@ public class ElevatorManager {
       elevatorList = atomicSort(elevatorList, floor);
 
       return elevatorList;
-   }
-   
-   public static void main(String[] args) {
-       // int maxCap, int start, int upperElevatorRange, int lowerElevatorRange, String mode
-       Elevator elevator = new Elevator(10, 4, 20, 0, "s");
-       elevator.changeState (elevator.DOWN);
-       Elevator elevator2 = new Elevator(10, 12, 20, 0, "s");
-       elevator2.changeState (elevator.DOWN);
-       
-       Elevator[] eArray = new Elevator[2];
-       eArray[0] = elevator;
-       eArray[1] = elevator2;
-       
-       // int numFloors, int numElevators
-       Building building = new Building(20, 2);
-       
-       // int id, int waitTime, Integer destFl, Integer direct
-       Person person = new Person(0, 1, 7, -1);
-       
-       building.insertInFloor (7, person);
-       
-       // Elevator[] e, Building b, String mode
-       ElevatorManager elevatorManager = new ElevatorManager(eArray, building, "s" );
-       LinkedList<Elevator> elevatorList = elevatorManager.generatePriorityFields (-1, 7);
-       
-       System.out.println (elevatorList.get(0).getCurrentFloor ());
    }
 
    private static LinkedList<Elevator> atomicSort(
