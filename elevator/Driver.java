@@ -61,7 +61,7 @@ public class Driver {
                             || !areElevatorsEmpty ()) {
                         manager.manage ();
                         building.currentTime++;
-                        gui.update (10, elevators);
+                        gui.update (10, elevators, currentTime, building);
                     }
                     break;
                 }
@@ -79,7 +79,7 @@ public class Driver {
                     difference = time - currentTime;
                     for (int i = 0; i < difference; i++) {
                         manager.manage ();
-                        gui.update (10, elevators);
+                        gui.update (10, elevators, currentTime, building);
                         for (int j = 0; j < elevators.length; j++) {
                             if ( ( elevators[j].getCurrentFloor () > building.numbFloors)
                                     || ( elevators[j].getCurCap () < 0)) {
