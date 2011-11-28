@@ -527,7 +527,7 @@ public class ElevatorManager {
       
       for (int i = 0; i < elevatorList.size(); i++) {
           int elevatorFloor = elevatorList.get(i).getCurrentFloor ();
-          int k = floor - elevatorFloor;
+          int k = elevatorFloor - floor;
           
           if ( Math.abs (k) <= priorityFieldDistance) {
               // we keep the elevator
@@ -540,23 +540,36 @@ public class ElevatorManager {
               }
           }
       }
-      
-      /*
-       * for (Elevator elevator : elevatorList) { if (!elevator.isEmpty () &&
-       * elevator.getState () != direction) { elevatorList.remove (elevator); }
-       * }
-       */
-
-      /*
-       * // remove ones that are not within the desired proximity for (Elevator
-       * elevator : elevatorList) { if ( ( elevator.getCurrentFloor () > floor +
-       * priorityFieldDistance) || ( elevator.getCurrentFloor () < floor -
-       * priorityFieldDistance)) { elevatorList.remove (elevator); } }
-       */
 
       elevatorList = atomicSort(elevatorList, floor);
 
       return elevatorList;
+   }
+   
+   public static void main(String[] args) {
+       // int maxCap, int start, int upperElevatorRange, int lowerElevatorRange, String mode
+       Elevator elevator = new Elevator(10, 4, 20, 0, "s");
+       elevator.changeState (elevator.DOWN);
+       Elevator elevator2 = new Elevator(10, 12, 20, 0, "s");
+       elevator2.changeState (elevator.DOWN);
+       
+       Elevator[] eArray = new Elevator[2];
+       eArray[0] = elevator;
+       eArray[1] = elevator2;
+       
+       // int numFloors, int numElevators
+       Building building = new Building(20, 2);
+       
+       // int id, int waitTime, Integer destFl, Integer direct
+       Person person = new Person(0, 1, 7, -1);
+       
+       building.insertInFloor (7, person);
+       
+       // Elevator[] e, Building b, String mode
+       ElevatorManager elevatorManager = new ElevatorManager(eArray, building, "s" );
+       LinkedList<Elevator> elevatorList = elevatorManager.generatePriorityFields (-1, 7);
+       
+       System.out.println (elevatorList.get(0).getCurrentFloor ());
    }
 
    private static LinkedList<Elevator> atomicSort(
