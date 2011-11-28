@@ -194,6 +194,10 @@ public class Elevator implements Comparable<Elevator> {
     * going up it will be rejected
     */
    private boolean checkValid(int f) {
+      if (this.state != this.desiredState) {
+         setState (this.state * -1);
+         return true;
+      }
       if (f < floor && state == UP) {
          return false;
       } else if (f > floor && state == DOWN) {
@@ -211,12 +215,11 @@ public class Elevator implements Comparable<Elevator> {
    public boolean enter(Person p) {
 
       if (curCap == maxCap) {
-         assert false; // TODO Fix this code
          return false;
       }
       int floorWanted = p.getDestinationFloor();
       if (!checkValid(floorWanted)) {
-         assert false; // TODO Fix this
+         System.err.println ("We are not supposed to be here");
          return false;
       }
       goals.add(floorWanted);
