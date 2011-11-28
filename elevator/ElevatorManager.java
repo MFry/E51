@@ -198,7 +198,7 @@ public class ElevatorManager {
          oldBuildingState[i][Building.DOWN] = building.getPeople(i,
                Building.DOWN);
       }
-
+      
    }
 
    /***
@@ -301,19 +301,25 @@ public class ElevatorManager {
                if (elevators[i].getState() > 0) {
                   int peopleWaiting = building.getPeople(eFloor, Building.UP);
                   if (peopleWaiting > 0) {
-                     while (peopleWaiting > 0) {
+                     while (!elevators[i].isFull() && peopleWaiting > 0) {
                         elevators[i]
                               .enter(building.remove(eFloor, Building.UP));
                         --peopleWaiting;
+                     }
+                     if (peopleWaiting > 0 && !knownDestinations && !knownPeoplePerFloor) {
+                        //TODO FIX THIS
                      }
                   }
                } else if (elevators[i].getState() < 0) {
                   int peopleWaiting = building.getPeople(eFloor, Building.DOWN);
                   if (peopleWaiting > 0) {
-                     while (peopleWaiting > 0) {
+                     while (!elevators[i].isFull() && peopleWaiting > 0) {
                         elevators[i].enter(building.remove(eFloor,
                               Building.DOWN));
                         --peopleWaiting;
+                     }
+                     if (peopleWaiting > 0 && !knownDestinations && !knownPeoplePerFloor) {
+                        
                      }
                   }
                }
@@ -341,7 +347,9 @@ public class ElevatorManager {
 
                } else {
                   // TODO We will need ensure that we don't ignore people
-                  availableElevators.remove();
+                  Elevator e = availableElevators.remove();
+                  e.setGoal(i);
+                  
                }
             }
          }
@@ -354,6 +362,8 @@ public class ElevatorManager {
 
                } else {
                   // TODO We will need ensure that we don't ignore people
+                  Elevator e = availableElevators.remove();
+                  e.setGoal(i);
                }
             }
          }
