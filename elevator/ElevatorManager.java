@@ -358,7 +358,7 @@ public class ElevatorManager {
                } else {
                   // TODO We will need ensure that we don't ignore people
                   Elevator e = availableElevators.remove();
-                  e.setGoal(i);
+                  e.setGoal(buildingOrderUp[i]);
                }
             }
          }
@@ -373,7 +373,7 @@ public class ElevatorManager {
                } else {
                   // TODO We will need ensure that we don't ignore people
                   Elevator e = availableElevators.remove();
-                  e.setGoal(i);
+                  e.setGoal(buildingOrderDown[i]);
                }
             }
          }
