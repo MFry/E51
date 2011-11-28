@@ -10,7 +10,7 @@ public class Elevator implements Comparable<Elevator> {
    private final int maxFloor; // The maximum Floor the elevator can reach
    private final int minFloor; // The minimum Floor the elevator can reach
    private int distanceTrav;
-   private int curCap; // Current Capacity of the elevator
+   public int curCap; // Current Capacity of the elevator
    private int state; // -1 going down, 0 not moving, 1 going up
    private int desiredState;
    public PriorityQueue<Integer> goals; // The goals for the elevator
