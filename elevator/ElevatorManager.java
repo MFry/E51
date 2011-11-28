@@ -192,13 +192,13 @@ public class ElevatorManager {
     * Creates a copy of the building after manage has completed most of its
     * function
     */
-   private void updateOldBuildingState() {
+   private void updateOldBuildingState(int[][] moreGoals) {
       for (int i = 0; i < building.numbElevators; ++i) {
-         oldBuildingState[i][Building.UP] = building.getPeople(i, Building.UP);
+         oldBuildingState[i][Building.UP] = building.getPeople(i,
+               Building.UP) - moreGoals[i][Building.UP];
          oldBuildingState[i][Building.DOWN] = building.getPeople(i,
-               Building.DOWN);
+               Building.DOWN) - moreGoals[i][Building.DOWN];;
       }
-      
    }
 
    /***
@@ -291,9 +291,10 @@ public class ElevatorManager {
 
    private void smartManage() {
       smartElevator();
+      int moreGoals[][] = new int[building.floors.length][2]; //Intermediate Scheduler needs more information
       for (int i = 0; i < elevators.length; ++i) {
          int eFloor = elevators[i].getCurrentFloor();
-         Integer goal = elevators[i].peekGoal();
+         Integer goal = elevators[i].peekGoal(); 
          if (goal != null) {
             if (eFloor == elevators[i].peekGoal()) {
                // Someone may be entering
@@ -306,8 +307,9 @@ public class ElevatorManager {
                               .enter(building.remove(eFloor, Building.UP));
                         --peopleWaiting;
                      }
-                     if (peopleWaiting > 0 && !knownDestinations && !knownPeoplePerFloor) {
-                        //TODO FIX THIS
+                     if (peopleWaiting > 0 && !knownDestinations
+                           && !knownPeoplePerFloor) {
+                        moreGoals[i][Building.UP] = building.getPeople(i, Building.UP);
                      }
                   }
                } else if (elevators[i].getState() < 0) {
@@ -318,8 +320,9 @@ public class ElevatorManager {
                               Building.DOWN));
                         --peopleWaiting;
                      }
-                     if (peopleWaiting > 0 && !knownDestinations && !knownPeoplePerFloor) {
-                        
+                     if (peopleWaiting > 0 && !knownDestinations
+                           && !knownPeoplePerFloor) {
+                        moreGoals[i][Building.DOWN] = building.getPeople(i, Building.DOWN);
                      }
                   }
                }
@@ -328,7 +331,7 @@ public class ElevatorManager {
       }
       runAllElevators();
       // This must be done last so that we can get an accurate building state
-      updateOldBuildingState();
+      updateOldBuildingState(moreGoals);
    }
 
    // TODO Exponential recharge time for elevator chaining
@@ -349,7 +352,6 @@ public class ElevatorManager {
                   // TODO We will need ensure that we don't ignore people
                   Elevator e = availableElevators.remove();
                   e.setGoal(i);
-                  
                }
             }
          }
