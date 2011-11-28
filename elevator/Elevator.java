@@ -122,6 +122,13 @@ public class Elevator implements Comparable<Elevator> {
     *           A floor that the elevator will go to
     */
    public void setGoal(int toDo) {
+      if (goals.isEmpty()) {
+         if (toDo < floor) {
+            setState (DOWN);
+         } else {
+            setState (UP);
+         }
+      } 
       goals.add(toDo);
    }
 
@@ -198,14 +205,6 @@ public class Elevator implements Comparable<Elevator> {
          return false;
       }
       int floorWanted = p.getDestinationFloor();
-      if (state == STATIC) { //We change state for the people
-         System.err.println(goals.toString());
-         if (floor < floorWanted) {
-           this.setState(UP);
-         } else {
-            this.setState(DOWN);
-         }
-      }
       if (!checkValid(floorWanted)) {
          assert false; // TODO Fix this
          return false;
@@ -246,11 +245,7 @@ public class Elevator implements Comparable<Elevator> {
       // TODO Check what floors the elevator can move to
       if (!goals.isEmpty()) {
          int destination = goals.peek();
-         if (this.state == STATIC) {
-            move (destination);
-         } else {
-            move();
-         }      
+         move();      
          int localGoal = goals.peek();
          // We have found a goal set
          if (localGoal == floor) {
@@ -283,15 +278,6 @@ public class Elevator implements Comparable<Elevator> {
          state = STATIC; // we have nothing to do
       }
       return null;
-   }
-
-   private void move(int destination) {
-      if (floor < destination) {
-         floor += 1;
-      } else {
-         floor += -1;
-      }
-      distanceTrav += 1;
    }
 
    public void move() {
