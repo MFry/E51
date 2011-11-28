@@ -348,7 +348,6 @@ public class ElevatorManager {
 
    private void moveAllElevators () {
        for (int i = 0; i < elevators.length; ++i) {
-           elevators[i].move();
            //check if anyonre wants to get off
            LinkedList<Person> people = elevators[i].contains.get(elevators[i].getCurrentFloor ());
            if (people != null) {
@@ -360,6 +359,7 @@ public class ElevatorManager {
               building.insertInFloor(elevators[i].getCurrentFloor(), people);
               elevators[i].contains.remove(elevators[i].getCurrentFloor ());
            }
+           elevators[i].move(); //BUG   
        }
     
 }
