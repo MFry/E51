@@ -532,6 +532,15 @@ public class ElevatorManager {
               elevatorList.remove(elevatorList.get(i));
           }
       }
+      
+      // if going one way, desired state is the other way, throw it out
+      for (int i = 0; i < elevatorList.size (); i++) {
+          int desiredState = elevatorList.get(i).getDesiredState ();
+          int actualState = elevatorList.get(i).getState ();
+          if (desiredState != actualState) {
+              elevatorList.remove(elevatorList.get(i));
+          }
+      }
 
       for (int i = 0; i < elevatorList.size(); i++) {
          int elevatorFloor = elevatorList.get(i).getCurrentFloor();
