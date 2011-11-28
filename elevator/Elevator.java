@@ -12,6 +12,7 @@ public class Elevator implements Comparable<Elevator> {
    private int distanceTrav;
    private int curCap; // Current Capacity of the elevator
    private int state; // -1 going down, 0 not moving, 1 going up
+   private int desiredState;
    private PriorityQueue<Integer> goals; // The goals for the elevator
    private HashMap<Integer, LinkedList<Person>> contains; // The people the
    /* STATE */// elevator
@@ -51,6 +52,7 @@ public class Elevator implements Comparable<Elevator> {
       this.startingFloor = start;
       this.floor = this.startingFloor;
       this.state = STATIC; // The elevator hasn't moved yet
+      this.desiredState = STATIC;
       goals = new PriorityQueue<Integer>();
       contains = new HashMap<Integer, LinkedList<Person>>(maxCap);
       extractMode(mode);
@@ -145,6 +147,14 @@ public class Elevator implements Comparable<Elevator> {
    public int getState() {
 
       return state;
+   }
+
+   public void setDesiredState (int want) {
+      desiredState = want;
+   }
+   
+   public int getDesiredState () {
+      return desiredState;
    }
 
    /*** @returns whether the elevator is full or not */
