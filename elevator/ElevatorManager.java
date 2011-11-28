@@ -524,6 +524,23 @@ public class ElevatorManager {
             elevatorList.remove(elevatorList.get(i));
          }
       }
+      
+      for (int i = 0; i < elevatorList.size(); i++) {
+          int elevatorFloor = elevatorList.get(i).getCurrentFloor ();
+          int k = floor - elevatorFloor;
+          
+          if ( Math.abs (k) <= priorityFieldDistance) {
+              // we keep the elevator
+          } else {
+              if ( (k < 0) && elevatorList.get(i).getState () < 0) {
+                  elevatorList.remove (elevatorList.get (i));
+              }
+              if ( (k > 0) && elevatorList.get(i).getState () > 0) {
+                  elevatorList.remove(elevatorList.get(i));
+              }
+          }
+      }
+      
       /*
        * for (Elevator elevator : elevatorList) { if (!elevator.isEmpty () &&
        * elevator.getState () != direction) { elevatorList.remove (elevator); }
