@@ -194,10 +194,11 @@ public class ElevatorManager {
     */
    private void updateOldBuildingState(int[][] moreGoals) {
       for (int i = 0; i < building.numbElevators; ++i) {
-         oldBuildingState[i][Building.UP] = building.getPeople(i,
-               Building.UP) - moreGoals[i][Building.UP];
+         oldBuildingState[i][Building.UP] = building.getPeople(i, Building.UP)
+               - moreGoals[i][Building.UP];
          oldBuildingState[i][Building.DOWN] = building.getPeople(i,
-               Building.DOWN) - moreGoals[i][Building.DOWN];;
+               Building.DOWN) - moreGoals[i][Building.DOWN];
+         ;
       }
    }
 
@@ -291,10 +292,13 @@ public class ElevatorManager {
 
    private void smartManage() {
       smartElevator();
-      int moreGoals[][] = new int[building.floors.length][2]; //Intermediate Scheduler needs more information
+      int moreGoals[][] = new int[building.floors.length][2]; // Intermediate
+                                                              // Scheduler needs
+                                                              // more
+                                                              // information
       for (int i = 0; i < elevators.length; ++i) {
          int eFloor = elevators[i].getCurrentFloor();
-         Integer goal = elevators[i].peekGoal(); 
+         Integer goal = elevators[i].peekGoal();
          if (goal != null) {
             if (eFloor == elevators[i].peekGoal()) {
                // Someone may be entering
@@ -309,7 +313,8 @@ public class ElevatorManager {
                      }
                      if (peopleWaiting > 0 && !knownDestinations
                            && !knownPeoplePerFloor) {
-                        moreGoals[i][Building.UP] = building.getPeople(i, Building.UP);
+                        moreGoals[i][Building.UP] = building.getPeople(i,
+                              Building.UP);
                      }
                   }
                } else if (elevators[i].getState() < 0) {
@@ -322,7 +327,8 @@ public class ElevatorManager {
                      }
                      if (peopleWaiting > 0 && !knownDestinations
                            && !knownPeoplePerFloor) {
-                        moreGoals[i][Building.DOWN] = building.getPeople(i, Building.DOWN);
+                        moreGoals[i][Building.DOWN] = building.getPeople(i,
+                              Building.DOWN);
                      }
                   }
                }
@@ -347,7 +353,8 @@ public class ElevatorManager {
                LinkedList<Elevator> availableElevators = generatePriorityFields(
                      Elevator.UP, buildingOrderUp[i]);
                if (knownDestinations || knownPeoplePerFloor) {
-
+                  // Check if the elevator we are scheduling to go here can pick
+                  // up all of the people
                } else {
                   // TODO We will need ensure that we don't ignore people
                   Elevator e = availableElevators.remove();
@@ -361,7 +368,8 @@ public class ElevatorManager {
                LinkedList<Elevator> availableElevators = generatePriorityFields(
                      Elevator.UP, buildingOrderUp[i]);
                if (knownDestinations || knownPeoplePerFloor) {
-
+                  // Check if the elevator we are scheduling to go here can pick
+                  // up all of the people
                } else {
                   // TODO We will need ensure that we don't ignore people
                   Elevator e = availableElevators.remove();
