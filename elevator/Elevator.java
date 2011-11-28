@@ -41,7 +41,8 @@ public class Elevator implements Comparable<Elevator> {
     * @param mode
     * 
     */
-   public Elevator(int maxCap, int start, int upperElevatorRange, int lowerElevatorRange, String mode) {
+   public Elevator(int maxCap, int start, int upperElevatorRange,
+         int lowerElevatorRange, String mode) {
 
       this.maxCap = maxCap;
       this.maxFloor = upperElevatorRange;
@@ -124,10 +125,10 @@ public class Elevator implements Comparable<Elevator> {
       goals.add(toDo);
    }
 
-   public Integer peekGoal () {
+   public Integer peekGoal() {
       return goals.peek();
    }
-   
+
    /*** @Returns the total distance the elevator has traveled */
    public int getDistance() {
       return distanceTrav;
@@ -165,11 +166,11 @@ public class Elevator implements Comparable<Elevator> {
       return false;
    }
 
-   /*** @Returns whether the elevator is empty */ 
-   public boolean isEmpty () {
+   /*** @Returns whether the elevator is empty */
+   public boolean isEmpty() {
       return curCap == 0;
    }
-   
+
    /***
     * Takes the input f (floor) and check if its a valid floor. Example: if f is
     * somewhere below the current floor of the elevator but the elevator is
@@ -193,12 +194,20 @@ public class Elevator implements Comparable<Elevator> {
    public boolean enter(Person p) {
 
       if (curCap == maxCap) {
-         assert false; //TODO Fix this code
+         assert false; // TODO Fix this code
          return false;
       }
       int floorWanted = p.getDestinationFloor();
+      if (state == STATIC) { //We change state for the people
+         System.err.println(goals.toString());
+         if (floor < floorWanted) {
+           this.setState(UP);
+         } else {
+            this.setState(DOWN);
+         }
+      }
       if (!checkValid(floorWanted)) {
-         assert false; //TODO Fix this
+         assert false; // TODO Fix this
          return false;
       }
       goals.add(floorWanted);
@@ -212,7 +221,7 @@ public class Elevator implements Comparable<Elevator> {
          newGroup.add(p);
          contains.put(floorWanted, newGroup);
       }
-      assert curCap >= 0; //It should never be negative
+      assert curCap >= 0; // It should never be negative
       curCap++;
       return true;
    }
@@ -224,7 +233,7 @@ public class Elevator implements Comparable<Elevator> {
       if (floor == maxFloor && state > 0 || floor == minFloor && state < 0) {
          assert (goals.isEmpty()); // If the goals are not empty this is a bug
          setState(state * -1);
-      } 
+      }
    }
 
    /***
@@ -236,16 +245,20 @@ public class Elevator implements Comparable<Elevator> {
    public LinkedList<Person> update() {
       // TODO Check what floors the elevator can move to
       if (!goals.isEmpty()) {
-         move ();
          int destination = goals.peek();
+         if (this.state == STATIC) {
+            move (destination);
+         } else {
+            move();
+         }      
          int localGoal = goals.peek();
          // We have found a goal set
          if (localGoal == floor) {
             // int key = goals.remove(); //Good idea by Roger
             while (localGoal == floor) {
                goals.remove();
-               if(goals.isEmpty ()){
-                   break;
+               if (goals.isEmpty()) {
+                  break;
                }
                localGoal = goals.peek();
             }
@@ -264,20 +277,29 @@ public class Elevator implements Comparable<Elevator> {
                                   // this floor
          }
       } else if (dumbMode) {
-         move ();
+         move();
          checkRange();
       } else {
          state = STATIC; // we have nothing to do
       }
       return null;
    }
-   
-   public void move () {
+
+   private void move(int destination) {
+      if (floor < destination) {
+         floor += 1;
+      } else {
+         floor += -1;
+      }
+      distanceTrav += 1;
+   }
+
+   public void move() {
       floor += state;
       distanceTrav += 1;
-      //checkRange();
+      // checkRange();
    }
-   
+
    /***
     * Allows elevators to be comparable by priority (which is the current floor
     * they are on)
@@ -294,8 +316,9 @@ public class Elevator implements Comparable<Elevator> {
       return 0;
    }
 
-   public int[] getInfo () {
-      int[] info = {floor, startingFloor, maxCap, maxFloor, distanceTrav, curCap, state};
+   public int[] getInfo() {
+      int[] info = { floor, startingFloor, maxCap, maxFloor, distanceTrav,
+            curCap, state };
       return info;
    }
 }
