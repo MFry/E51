@@ -1,5 +1,9 @@
 import java.util.Comparator;
 
+/**
+ * Person class used for the TestCaseGenerator class
+ */
+
 public class JPerson implements Comparator, Comparable {
     int time; // 0000 to 2400
     int direction; // 1 for up, 0 for down

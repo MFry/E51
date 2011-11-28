@@ -30,14 +30,15 @@ import java.util.Random;
 public class TestCaseGenerator {
 
     private static final int NIGHT_SHIFT_BEGIN = 2300; // 11:00pm
-    private static final int NIGHT_SHIFT_END = 500; // 5:00am
+    private static int NIGHT_SHIFT_END = 500; // 5:00am
     private static int buildingFloors = 10; // number of floors in building
     private static int maxCapacity; // determined by building floors
     private static double workerPercentage = 0.6; 
     private static double custodianPercentage = 0.05;
+    private static int randomFactor = 10;
     private static int amountOfWorkers; // equals maxCapacity * workerPercentage
     private static int amountOfCustodians;
-    private static int numberOfGuests;
+    private static int numberOfGuests = 30;
     private static int openingTime = 900; // 9:00 am
     private static int closingTime = 1700; // 5:00 pm
     private static int daysToGenerate = 1; // how many days will be printed to output.txt
@@ -56,6 +57,8 @@ public class TestCaseGenerator {
      */
     static ArrayList<JPerson> personList = new ArrayList<JPerson> ();
 
+    static ArrayList<JPerson> guestsList = new ArrayList<JPerson> ();
+    
     /**
      * Initializes the building ArrayList of ArrayList<JPerson>
      * Must be called before performing operations on the global
@@ -85,6 +88,11 @@ public class TestCaseGenerator {
         for (int i = 0; i < daysToGenerate; i++) {
             initBuilding ();
             ArrayList<JPerson> simplePeople = generateNormalPeople ();
+            if (guestsList.size () > 0) {
+                for (JPerson person : guestsList) {
+                    simplePeople.add(person);
+                }
+            }
             Collections.sort (simplePeople);
             for (JPerson person : simplePeople) {
                 testPeople.add (person);
@@ -130,11 +138,14 @@ public class TestCaseGenerator {
         }
     }
 
-    public static void generateGuests (int amountToGenerate, int startingTime, Random randInt) {
+    /**
+     * Creates Guests at a client specified time
+     * @param randInt used to simulate randomness in their entry
+     */
+    public static void generateGuests (int startingTime, Random randInt) {
         // generate guests throughout operating hours
-        numberOfGuests = amountToGenerate;
         int count = 0;
-        for (; count < amountToGenerate; count++) {
+        for (; count < numberOfGuests; count++) {
             int randomNumber = randInt.nextInt () % 10;
             if (randomNumber < 0) {
                 randomNumber *= -1;
@@ -146,19 +157,23 @@ public class TestCaseGenerator {
             building.get (person.getDestFloor ()).add (person); // add person to
                                                                 // destination
                                                                 // floor
-            personList.add (person);
+            guestsList.add (person);
         }
     }
     
+    /**
+     * Moves Guests around at a client specified time
+     * @param randInt used to simulate randomness in their entry
+     */
     public static void moveGuestsAround (int timeToMove, Random randInt, int numberOfCalls) {
         int loopCount = 0;
-        int count = personList.size() - numberOfGuests;
+        int count = guestsList.size() - numberOfGuests;
         for (; loopCount < numberOfGuests; loopCount++) {
-            int randomNumber = randInt.nextInt () % 10;
+            int randomNumber = randInt.nextInt () % randomFactor;
             if (randomNumber < 0) {
                 randomNumber *= -1; // make negative
             }
-            JPerson temp = personList.get (loopCount + count);
+            JPerson temp = guestsList.get (loopCount + count);
             // JPerson person = new JPerson(closingTime + randInt.nextInt () %
             // 10, -1, temp.getDestFloor (), 0);
             int floorToTravel = chooseRandomFloor (temp.getDestFloor ());
@@ -176,33 +191,38 @@ public class TestCaseGenerator {
                     currentFloor, floorToTravel, "MOVE");
             
             building.get (person.getInitialFloor ()).remove (
-                    personList.get (loopCount + count)); // remove person from previous
+                    guestsList.get (loopCount + count)); // remove person from previous
                                              // floor
             building.get (person.getDestFloor ()).add (person); // add person to
                                                                 // new floor
-            personList.add (person);
+            guestsList.add (person);
         }
     }
     
+    /**
+     * Makes guests leave at a client specified time
+     * @param timeToLeave time that the guests leave
+     * @param randInt used to simulate randomness in their exit
+     */
     public static void makeGuestsLeave (int timeToLeave, Random randInt) {
         // custodians then leave at 5:00am
-        int currentPosition = personList.size () - numberOfGuests;// -1;
+        int currentPosition = guestsList.size () - numberOfGuests;// -1;
         int count = 0;
         for (; count < numberOfGuests; count++) {
             int randomNumber = randInt.nextInt () % 10;
             if (randomNumber < 0) {
                 randomNumber *= -1;
             }
-            JPerson temp = personList.get (currentPosition + count);
+            JPerson temp = guestsList.get (currentPosition + count);
             JPerson person = new JPerson (timeToLeave + randomNumber, -1,
                     temp.getDestFloor (), 0, "MOVE");
             building.get (person.getInitialFloor ()).remove (
-                    personList.get (currentPosition + count)); // remove person
+                    guestsList.get (currentPosition + count)); // remove person
                                                                // from old floor
             building.get (person.getDestFloor ()).add (person); // add person to
                                                                 // new floor
-            personList.add (person);
-        } // personList grows by += numberOfGuests
+            guestsList.add (person);
+        } // guestsList grows by += numberOfGuests
     }
     
     /**
@@ -223,7 +243,7 @@ public class TestCaseGenerator {
         int loopCount = 0;
         int count = 0 + ( amountOfWorkers * numberOfCalls);
         for (; loopCount < amountOfWorkers; loopCount++) {
-            int randomNumber = randInt.nextInt () % 10;
+            int randomNumber = randInt.nextInt () % randomFactor;
             if (randomNumber < 0) {
                 randomNumber *= -1; // make negative
             }
@@ -261,9 +281,9 @@ public class TestCaseGenerator {
      * 
      * @param randInt provides randomness to their departure time
      */
-    public static void makeWorkersLeave (Random randInt) {
+    public static void makeWorkersLeave (int leaveTime, Random randInt) {
         // workers then leave at 5:00pm
-        closingTime = 1700;
+        closingTime = leaveTime;
         int count = 0;
         int sizeOfList = personList.size ();
         for (; count < amountOfWorkers; count++) {
@@ -342,7 +362,6 @@ public class TestCaseGenerator {
                                                                 // new floor
             personList.add (person);
         } // personList grows by += amountOfCustodians
-        
     }
     
     /**
@@ -409,19 +428,38 @@ public class TestCaseGenerator {
         numberOfDayShifEmployees = amountOfWorkers;
 
         generateWorkers (randInt);
+        moveWorkersAround (1000, randInt, 0);
+        moveWorkersAround (1010, randInt, 0);
+        moveWorkersAround (1020, randInt, 0);
+        moveWorkersAround (1030, randInt, 0);
         
-        moveWorkersAround (1100, randInt, 0);
-        moveWorkersAround (1300, randInt, 1);
-        moveWorkersAround (1500, randInt, 2);
-
-        makeWorkersLeave (randInt);
-
+        int count = 0;
+        int currentTime = 1000;
+        for (int j = 0; j < 6; j++) {
+            
+            for (int i = 0; i < 60; i += 10 ) {
+                moveWorkersAround(currentTime + i, randInt,count);
+                count++;
+            }
+            currentTime += (j * 100);
+        }
+        
+        makeWorkersLeave (2100, randInt);
+        
         generateCustodians (randInt);
         
         moveCustodiansAround (200, randInt, 0);
-        moveCustodiansAround (400, randInt, 1);
-        moveCustodiansAround (430, randInt, 2);
-        
+        moveCustodiansAround (230, randInt, 1);
+        moveCustodiansAround (300, randInt, 2);
+        moveCustodiansAround (330, randInt, 3);
+        moveCustodiansAround (400, randInt, 2);
+        moveCustodiansAround (430, randInt, 3);
+        moveCustodiansAround (500, randInt, 4);
+        moveCustodiansAround (530, randInt, 4);
+        moveCustodiansAround (600, randInt, 4);
+        moveCustodiansAround (630, randInt, 4);
+        moveCustodiansAround (700, randInt, 4);
+        NIGHT_SHIFT_END = 730;
         makeCustodiansLeave (randInt);
         
         return personList;
@@ -511,7 +549,9 @@ public class TestCaseGenerator {
             System.out.println ("File not found");
             e.printStackTrace ();
         }
+        
         BufferedWriter bw = new BufferedWriter (fileWriter);
+        bw.write (buildingFloors + "\n");
         for (int count = 0; count < localPersonList.size (); count++) {
             JPerson temp = localPersonList.get (count);
             bw.write (temp.getCreateOrMove () + " " //+ "Time: "
@@ -541,6 +581,7 @@ public class TestCaseGenerator {
                 + "\n");
         bw.write ("Number of Night Shift Employees: "
                 + numberOfNightShiftEmployees + "\n");
+        bw.write ("Number of Guests: " + numberOfGuests + "\n");
         bw.write ("Number of Days Generated: " + daysToGenerate + "\n");
         bw.write ("Number of Elevator calls: " + personList.size ()
                 * daysToGenerate);
