@@ -54,7 +54,7 @@ public class ElevatorManager {
                                                    // because we do not care
                                                    // about people that do not
                                                    // want to use the elevator
-      //init(); // TODO recode this
+      // init(); // TODO recode this
    }
 
    private void init() {
@@ -300,7 +300,7 @@ public class ElevatorManager {
          int eFloor = elevators[i].getCurrentFloor();
          Integer goal = elevators[i].peekGoal();
          if (goal != null) {
-            if (eFloor == elevators[i].peekGoal()) {
+            if (eFloor == goal) {
                // Someone may be entering
 
                if (elevators[i].getState() > 0) {
@@ -366,7 +366,7 @@ public class ElevatorManager {
          if (buildingOrderDown != null) {
             for (int i = 0; i < buildingOrderDown.length; ++i) {
                LinkedList<Elevator> availableElevators = generatePriorityFields(
-                     Elevator.UP, buildingOrderUp[i]);
+                     Elevator.DOWN, buildingOrderDown[i]);
                if (knownDestinations || knownPeoplePerFloor) {
                   // Check if the elevator we are scheduling to go here can pick
                   // up all of the people
@@ -380,7 +380,6 @@ public class ElevatorManager {
       }
    }
 
-   // TODO JOE TEST THIS
    private boolean checkBuildingState() {
       boolean changeOccured = false; // Assume no change
       curBuildingState = new int[oldBuildingState.length][2];
@@ -394,18 +393,12 @@ public class ElevatorManager {
          if (upState > 0 || downState > 0) {
             changeOccured = true; // change occurred
          }
-         
-         if(upState < 0 || downState < 0){
-             System.err.println ("The state went negative.");
-             System.err.println (building.currentTime);
-         }
          curBuildingState[i][ElevatorManager.UP] = upState;
          curBuildingState[i][ElevatorManager.DOWN] = downState;
       }
       return changeOccured;
    }
 
-   // TODO JOE TEST THIS
    /***
     * 
     * @param buildingState
@@ -420,13 +413,14 @@ public class ElevatorManager {
       int floorSchedule[] = new int[getNumberOfActiveFloors(buildingState)];
       for (int i = 0; i < floorSchedule.length; ++i) { // Populate the
                                                        // priorities
-         int max = 0;
+         int min = Integer.MAX_VALUE;
          int index = -1;
-         for (int j = 0; j < priorityFloors.length; ++j) { // Find the largest
-                                                           // priority
-            if (max < priorityFloors[j]) {
-               max = priorityFloors[j];
-               index = j;
+         for (int j = 0; j < priorityFloors.length; ++j) { // Find the smallest priority
+            if (priorityFloors[j] != 0) {  // We ignore 0s because there was no net change in people
+               if (min > priorityFloors[j]) {
+                  min = priorityFloors[j];
+                  index = j;
+               }
             }
          }
          priorityFloors[index] = 0; // We do now want to find the same priority
@@ -446,11 +440,10 @@ public class ElevatorManager {
       } else {
          floorSchedule = primitiveScheduler(buildingState);
       }
-      assert (floorSchedule != null);
+      // assert floorSchedule != null;
       return floorSchedule;
    }
 
-   // TODO JOE TEST THIS
    /***
     * 
     * Primitive Schedule finds the highest probability floor based on this
@@ -482,7 +475,7 @@ public class ElevatorManager {
             for (int j = 0; j < elevatorFloors.length; ++j) {
                sum += Math.abs(i - elevatorFloors[j]);
             }
-            sum = sum / elevatorFloors.length;
+            sum = sum / elevators.length;
          }
          priorityFloors[i] = sum;
       }
@@ -529,26 +522,55 @@ public class ElevatorManager {
             elevatorList.remove(elevatorList.get(i));
          }
       }
-      
+
       for (int i = 0; i < elevatorList.size(); i++) {
-          int elevatorFloor = elevatorList.get(i).getCurrentFloor ();
-          int k = elevatorFloor - floor;
-          
-          if ( Math.abs (k) <= priorityFieldDistance) {
-              // we keep the elevator
-          } else {
-              if ( (k < 0) && elevatorList.get(i).getState () < 0) {
-                  elevatorList.remove (elevatorList.get (i));
-              }
-              if ( (k > 0) && elevatorList.get(i).getState () > 0) {
-                  elevatorList.remove(elevatorList.get(i));
-              }
-          }
+         int elevatorFloor = elevatorList.get(i).getCurrentFloor();
+         int k = elevatorFloor - floor;
+
+         if (Math.abs(k) <= priorityFieldDistance) {
+            // we keep the elevator
+         } else {
+            if ((k < 0) && elevatorList.get(i).getState() < 0) {
+               elevatorList.remove(elevatorList.get(i));
+            }
+            if ((k > 0) && elevatorList.get(i).getState() > 0) {
+               elevatorList.remove(elevatorList.get(i));
+            }
+         }
       }
 
       elevatorList = atomicSort(elevatorList, floor);
 
       return elevatorList;
+   }
+
+   public static void main(String[] args) {
+      // int maxCap, int start, int upperElevatorRange, int lowerElevatorRange,
+      // String mode
+      Elevator elevator = new Elevator(10, 4, 20, 0, "s");
+      elevator.changeState(elevator.DOWN);
+      Elevator elevator2 = new Elevator(10, 12, 20, 0, "s");
+      elevator2.changeState(elevator.DOWN);
+
+      Elevator[] eArray = new Elevator[2];
+      eArray[0] = elevator;
+      eArray[1] = elevator2;
+
+      // int numFloors, int numElevators
+      Building building = new Building(20, 2);
+
+      // int id, int waitTime, Integer destFl, Integer direct
+      Person person = new Person(0, 1, 7, -1);
+
+      building.insertInFloor(7, person);
+
+      // Elevator[] e, Building b, String mode
+      ElevatorManager elevatorManager = new ElevatorManager(eArray, building,
+            "s");
+      LinkedList<Elevator> elevatorList = elevatorManager
+            .generatePriorityFields(-1, 7);
+
+      System.out.println(elevatorList.get(0).getCurrentFloor());
    }
 
    private static LinkedList<Elevator> atomicSort(
