@@ -522,6 +522,16 @@ public class ElevatorManager {
             elevatorList.remove(elevatorList.get(i));
          }
       }
+      
+      // remove elevators whose desired state does not match the direction
+      for (int i = 0; i < elevatorList.size(); i++) {
+          int state = elevatorList.get(i).getDesiredState ();
+          if (state == 0) {
+              // ignore 
+          } else if (state != direction) {
+              elevatorList.remove(elevatorList.get(i));
+          }
+      }
 
       for (int i = 0; i < elevatorList.size(); i++) {
          int elevatorFloor = elevatorList.get(i).getCurrentFloor();
@@ -572,7 +582,7 @@ public class ElevatorManager {
 
       System.out.println(elevatorList.get(0).getCurrentFloor());
    }
-
+   
    private static LinkedList<Elevator> atomicSort(
          LinkedList<Elevator> localElevatorList, int proximityFloor) {
       // sort based on proximity
