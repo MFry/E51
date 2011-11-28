@@ -210,7 +210,11 @@ public class ElevatorManager {
          LinkedList<Person> people = elevators[i].update();
          if (people != null) {
             building.insertInFloor(elevators[i].getCurrentFloor(), people);
-         }
+         }//if (smartMode && people == null ) {
+          //   if (elevators[i].getDesiredState () > 0) {
+          //       if ()
+          //   }
+         //}
       }
    }
 
@@ -317,6 +321,7 @@ public class ElevatorManager {
                               Building.UP);
                      }
                   }
+                  elevators[i].goals.remove ();
                } else if (elevators[i].getState() < 0) {
                   int peopleWaiting = building.getPeople(eFloor, Building.DOWN);
                   if (peopleWaiting > 0) {
@@ -332,15 +337,34 @@ public class ElevatorManager {
                      }
                   }
                }
+               elevators[i].goals.remove ();
             }
          }
       }
-      runAllElevators();
+      moveAllElevators();
       // This must be done last so that we can get an accurate building state
       updateOldBuildingState(moreGoals);
    }
 
-   // TODO Exponential recharge time for elevator chaining
+   private void moveAllElevators () {
+       for (int i = 0; i < elevators.length; ++i) {
+           elevators[i].move();
+           //check if anyonre wants to get off
+           LinkedList<Person> people = elevators[i].contains.get(elevators[i].getCurrentFloor ());
+           if (people != null) {
+              int floorGoal = elevators[i].goals.remove ();
+              int tempGoal = floorGoal;
+              while (tempGoal == floorGoal) {
+                  elevators[i].goals.remove ();
+              }
+              building.insertInFloor(elevators[i].getCurrentFloor(), people);
+              elevators[i].contains.remove(elevators[i].getCurrentFloor ());
+           }
+       }
+    
+}
+
+// TODO Exponential recharge time for elevator chaining
    // It will need to poll the building to see which floor has the most people
    private void smartElevator() {
       if (checkBuildingState()) {
@@ -359,6 +383,7 @@ public class ElevatorManager {
                   // TODO We will need ensure that we don't ignore people
                   Elevator e = availableElevators.remove();
                   e.setGoal(buildingOrderUp[i]);
+                  e.setDesiredState (Elevator.UP);
                }
             }
          }
@@ -374,6 +399,7 @@ public class ElevatorManager {
                   // TODO We will need ensure that we don't ignore people
                   Elevator e = availableElevators.remove();
                   e.setGoal(buildingOrderDown[i]);
+                  e.setDesiredState (Elevator.DOWN);
                }
             }
          }
@@ -563,34 +589,6 @@ public class ElevatorManager {
       return elevatorList;
    }
 
-   public static void main(String[] args) {
-      // int maxCap, int start, int upperElevatorRange, int lowerElevatorRange,
-      // String mode
-      Elevator elevator = new Elevator(10, 4, 20, 0, "s");
-      elevator.changeState(elevator.DOWN);
-      Elevator elevator2 = new Elevator(10, 12, 20, 0, "s");
-      elevator2.changeState(elevator.DOWN);
-
-      Elevator[] eArray = new Elevator[2];
-      eArray[0] = elevator;
-      eArray[1] = elevator2;
-
-      // int numFloors, int numElevators
-      Building building = new Building(20, 2);
-
-      // int id, int waitTime, Integer destFl, Integer direct
-      Person person = new Person(0, 1, 7, -1);
-
-      building.insertInFloor(7, person);
-
-      // Elevator[] e, Building b, String mode
-      ElevatorManager elevatorManager = new ElevatorManager(eArray, building,
-            "s");
-      LinkedList<Elevator> elevatorList = elevatorManager
-            .generatePriorityFields(-1, 7);
-
-      System.out.println(elevatorList.get(0).getCurrentFloor());
-   }
    
    private static LinkedList<Elevator> atomicSort(
          LinkedList<Elevator> localElevatorList, int proximityFloor) {

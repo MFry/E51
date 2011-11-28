@@ -13,8 +13,8 @@ public class Elevator implements Comparable<Elevator> {
    private int curCap; // Current Capacity of the elevator
    private int state; // -1 going down, 0 not moving, 1 going up
    private int desiredState;
-   private PriorityQueue<Integer> goals; // The goals for the elevator
-   private HashMap<Integer, LinkedList<Person>> contains; // The people the
+   public PriorityQueue<Integer> goals; // The goals for the elevator
+   public HashMap<Integer, LinkedList<Person>> contains; // The people the
    /* STATE */// elevator
    private boolean dumbMode;
    // contains
@@ -258,9 +258,9 @@ public class Elevator implements Comparable<Elevator> {
       // TODO Check what floors the elevator can move to
       if (!goals.isEmpty()) {
          int destination = goals.peek();
-         move();      
-         int localGoal = goals.peek();
-         // We have found a goal set
+         move();       
+         int localGoal = goals.peek ();
+         // We have found a goal set 
          if (localGoal == floor) {
             // int key = goals.remove(); //Good idea by Roger
             while (localGoal == floor) {
